@@ -1,0 +1,47 @@
+name: Refresh provider schemas
+
+on:
+  schedule:
+    # First of every month at 09:00 UTC.
+    - cron: "0 9 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Refresh schemas
+        run: npm run refresh-schemas
+
+      - name: Verify build still works
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Open PR if schemas changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/refresh-provider-schemas
+          title: "chore: refresh Postiz provider schemas"
+          commit-message: "chore: refresh Postiz provider schemas"
+          body: |
+            Monthly refresh from `docs.postiz.com/public-api/providers/*.md`.
+
+            If providers were added/removed, update `scripts/fetch-provider-schemas.ts` `PROVIDERS` accordingly.
+          add-paths: |
+            src/providers/schemas.ts
