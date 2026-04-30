@@ -23,7 +23,7 @@ export function createDeletePostGroupTool(
     name: "postiz_delete_post_group",
     label: "postiz: delete post group",
     description:
-      "Delete every post in a group (cross-post unit) via DELETE /api/posts/group/{group}. Use when you want to retract a whole cross-post in one call. Requires enableWrite + enableDelete + confirm=true.",
+      "Delete every post in a group (cross-post unit) via DELETE /api/public/v1/posts/group/{group}. Use when you want to retract a whole cross-post in one call. Already-published platform posts remain live. Requires enableWrite + enableDelete + confirm=true.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireDeleteGate(config, "postiz_delete_post_group");

@@ -116,7 +116,7 @@ interface RequestOpts {
   headers?: Record<string, string>;
   signal?: AbortSignal;
   /** When true, bypass the local rate-limit guard. Used by tools that report
-   *  status without spending a request — currently nothing does, but the
+   *  status without spending a request - currently nothing does, but the
    *  hook exists so we never have to refactor a guard around a future probe. */
   skipRateLimitGuard?: boolean;
 }
@@ -133,7 +133,7 @@ export class PostizClient {
    *  (older Postiz builds) so we still refuse to overshoot. */
   private readonly recentSends: number[] = [];
   /** Sticky once a response carries any X-RateLimit-* header. After that,
-   *  the server-reported counter is authoritative — we don't decrement
+   *  the server-reported counter is authoritative - we don't decrement
    *  locally and we don't second-guess a 0. */
   private serverProvidesRateLimit = false;
 
@@ -163,8 +163,18 @@ export class PostizClient {
   }
 
   redact(text: string): string {
-    if (!this.apiKey) return text;
-    return text.split(this.apiKey).join("***REDACTED***");
+    let out = text;
+    for (const secret of [
+      this.apiKey,
+      this.cfAccessClientSecret,
+      this.cfAccessClientId,
+    ]) {
+      if (!secret) continue;
+      // Skip absurdly short values to avoid mangling unrelated text.
+      if (secret.length < 8) continue;
+      out = out.split(secret).join("***REDACTED***");
+    }
+    return out;
   }
 
   /** GET /api/public/v1/integrations */
@@ -172,31 +182,44 @@ export class PostizClient {
     return this.request<PostizIntegration[]>("/api/public/v1/integrations");
   }
 
-  /** GET /api/public/v1/integrations/check (newer Postiz builds) */
+  /** GET /api/public/v1/is-connected */
   async checkIntegration(): Promise<Record<string, unknown>> {
-    return this.request<Record<string, unknown>>("/api/public/v1/integrations/check");
+    return this.request<Record<string, unknown>>("/api/public/v1/is-connected");
   }
 
-  /** GET /api/public/v1/integrations/find-slot?id=... (newer Postiz builds) */
+  /** GET /api/public/v1/find-slot/{id} */
   async findNextSlot(integrationId: string): Promise<Record<string, unknown>> {
     if (!isSafeId(integrationId)) {
       throw new Error(`Invalid integration id: ${integrationId}`);
     }
-    const qs = new URLSearchParams({ id: integrationId });
     return this.request<Record<string, unknown>>(
-      `/api/public/v1/integrations/find-slot?${qs}`,
+      `/api/public/v1/find-slot/${integrationId}`,
     );
   }
 
-  /** POST /api/public/v1/integrations/connect (newer Postiz builds) */
+  /** GET /api/public/v1/social/{integration}?refresh={existingIntegrationId}
+   *  Postiz public API: this is OAuth-URL minting for OAuth-based integrations
+   *  (X, LinkedIn, etc). Mastodon and other URL-based providers are NOT
+   *  supported here and return 400. The optional `refresh` value is the
+   *  EXISTING integration id to re-auth, not a boolean. */
   async connectIntegration(body: {
     provider: string;
-    refresh?: boolean;
+    refresh?: string;
   }): Promise<{ url: string }> {
-    return this.request<{ url: string }>("/api/public/v1/integrations/connect", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
+    if (!isSafeProviderSlug(body.provider)) {
+      throw new Error(`Invalid provider: ${body.provider}`);
+    }
+    const qs = new URLSearchParams();
+    if (body.refresh) {
+      if (!isSafeId(body.refresh)) {
+        throw new Error(`Invalid refresh id: ${body.refresh}`);
+      }
+      qs.set("refresh", body.refresh);
+    }
+    const suffix = qs.toString() ? `?${qs}` : "";
+    return this.request<{ url: string }>(
+      `/api/public/v1/social/${body.provider}${suffix}`,
+    );
   }
 
   /** DELETE /api/public/v1/integrations/{id} */
@@ -218,61 +241,63 @@ export class PostizClient {
     });
   }
 
-  /** GET /api/public/v1/posts?startDate=&endDate=&display=
-   *  startDate + endDate are required by Postiz (it returns 400 otherwise) and
-   *  must be ISO-8601. The MCP server fills sensible defaults if the agent
-   *  omits them; the client itself stays a thin shell. */
+  /** GET /api/public/v1/posts?startDate=&endDate=&customer=
+   *  startDate + endDate are required by the Postiz public API (it returns
+   *  400 otherwise) and must be ISO-8601. The MCP server fills sensible
+   *  defaults when the agent omits them; the client itself stays a thin
+   *  shell. */
   async listPosts(params: {
-    startDate?: string;
-    endDate?: string;
-    display?: "day" | "week" | "month";
+    startDate: string;
+    endDate: string;
     customer?: string;
-  } = {}): Promise<unknown> {
+  }): Promise<unknown> {
     const qs = new URLSearchParams();
-    if (params.startDate) qs.set("startDate", params.startDate);
-    if (params.endDate) qs.set("endDate", params.endDate);
-    if (params.display) qs.set("display", params.display);
+    qs.set("startDate", params.startDate);
+    qs.set("endDate", params.endDate);
     if (params.customer) qs.set("customer", params.customer);
-    const suffix = qs.toString() ? `?${qs}` : "";
-    return this.request<unknown>(`/api/public/v1/posts${suffix}`);
+    return this.request<unknown>(`/api/public/v1/posts?${qs}`);
   }
 
-  /** GET /api/public/v1/posts/missing-content?postId=... (newer Postiz builds) */
+  /** GET /api/public/v1/posts/{id}/missing */
   async getMissingContent(postId: string): Promise<Record<string, unknown>> {
     if (!isSafeId(postId)) {
       throw new Error(`Invalid post id: ${postId}`);
     }
-    const qs = new URLSearchParams({ postId });
     return this.request<Record<string, unknown>>(
-      `/api/public/v1/posts/missing-content?${qs}`,
+      `/api/public/v1/posts/${postId}/missing`,
     );
   }
 
-  /** PATCH /api/public/v1/posts/{id}/release-id (newer Postiz builds) */
+  /** PUT /api/public/v1/posts/{id}/release-id
+   *  Spec body shape is {releaseId} only. releaseURL is not in the public
+   *  API schema and is silently dropped. */
   async updateReleaseId(
     postId: string,
-    body: { releaseId: string; releaseURL?: string },
+    body: { releaseId: string },
   ): Promise<Record<string, unknown>> {
     if (!isSafeId(postId)) {
       throw new Error(`Invalid post id: ${postId}`);
     }
     return this.request<Record<string, unknown>>(
       `/api/public/v1/posts/${postId}/release-id`,
-      { method: "PATCH", body: JSON.stringify(body) },
+      { method: "PUT", body: JSON.stringify({ releaseId: body.releaseId }) },
     );
   }
 
-  /** PATCH /api/public/v1/posts/{id}/status (newer Postiz builds) */
+  /** PUT /api/public/v1/posts/{id}/status
+   *  Spec body shape is {status: "draft"|"schedule"} (lowercase, key is
+   *  `status` not `state`). Server response still uses uppercase
+   *  state: "DRAFT"|"QUEUE". */
   async updatePostStatus(
     postId: string,
-    body: { state: "DRAFT" | "QUEUE" },
+    body: { status: "draft" | "schedule" },
   ): Promise<Record<string, unknown>> {
     if (!isSafeId(postId)) {
       throw new Error(`Invalid post id: ${postId}`);
     }
     return this.request<Record<string, unknown>>(
       `/api/public/v1/posts/${postId}/status`,
-      { method: "PATCH", body: JSON.stringify(body) },
+      { method: "PUT", body: JSON.stringify(body) },
     );
   }
 
@@ -318,25 +343,30 @@ export class PostizClient {
     });
   }
 
-  /** POST /api/public/v1/upload/url (newer Postiz builds) */
+  /** POST /api/public/v1/upload-from-url
+   *  SSRF guard lives at the tool layer (src/tools/upload-from-url.ts);
+   *  the client trusts whatever the tool passes through. */
   async uploadFromUrl(url: string): Promise<PostizUploadResponse> {
-    return this.request<PostizUploadResponse>("/api/public/v1/upload/url", {
+    return this.request<PostizUploadResponse>("/api/public/v1/upload-from-url", {
       method: "POST",
       body: JSON.stringify({ url }),
     });
   }
 
-  /** GET /api/public/v1/analytics/{integrationId}?date= */
+  /** GET /api/public/v1/analytics/{integration}?date=
+   *  Spec marks `date` as a required string (number-of-days lookback, e.g.
+   *  "7", "30"). Numbers are silently coerced by URLSearchParams but pass
+   *  the spec because the API treats it as string. */
   async getPlatformAnalytics(params: {
     integrationId: string;
-    date?: number;
+    date: string | number;
   }): Promise<Record<string, unknown>> {
     if (!isSafeId(params.integrationId)) {
       throw new Error(`Invalid integration id: ${params.integrationId}`);
     }
     const qs = new URLSearchParams();
-    if (params.date !== undefined) qs.set("date", String(params.date));
-    const suffix = qs.toString() ? `?${qs}` : "";
+    qs.set("date", String(params.date));
+    const suffix = `?${qs}`;
     return this.request<Record<string, unknown>>(
       `/api/public/v1/analytics/${params.integrationId}${suffix}`,
     );
@@ -352,24 +382,43 @@ export class PostizClient {
     );
   }
 
-  /** GET /api/public/v1/video/function (newer Postiz builds) */
-  async listVoices(integrationId?: string): Promise<unknown> {
-    const qs = new URLSearchParams();
-    qs.set("functionName", "voices");
-    if (integrationId) qs.set("integrationId", integrationId);
-    return this.request<unknown>(`/api/public/v1/video/function?${qs}`);
+  /** POST /api/public/v1/video/function
+   *  Spec body shape: {functionName, identifier, params?}. functionName for
+   *  voices is "loadVoices"; `identifier` is the video-type identifier
+   *  (e.g. "image-text-slides"). Both required. */
+  async videoFunction(body: {
+    functionName: string;
+    identifier: string;
+    params?: Record<string, unknown>;
+  }): Promise<unknown> {
+    return this.request<unknown>("/api/public/v1/video/function", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
   }
 
-  /** POST /api/public/v1/video/generate (newer Postiz builds) */
+  /** Convenience: load voices for a given video-type identifier. */
+  async listVoices(identifier: string): Promise<unknown> {
+    return this.videoFunction({ functionName: "loadVoices", identifier });
+  }
+
+  /** POST /api/public/v1/generate-video (top-level path, hyphenated). */
   async generateVideo(body: Record<string, unknown>): Promise<Record<string, unknown>> {
-    return this.request<Record<string, unknown>>("/api/public/v1/video/generate", {
+    return this.request<Record<string, unknown>>("/api/public/v1/generate-video", {
       method: "POST",
       body: JSON.stringify(body),
     });
   }
 
   private async request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
-    if (!opts.skipRateLimitGuard) this.guardRateLimit();
+    let reservation: number | undefined;
+    if (!opts.skipRateLimitGuard) {
+      this.guardRateLimit();
+      // Reserve the slot pre-flight so concurrent callers don't all see the
+      // same `remaining` and overshoot. The reservation is released only if
+      // the request never reached Postiz (local error, abort, network fail).
+      reservation = this.reserveSlot();
+    }
     const url = `${this.baseUrl}${path}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -383,6 +432,7 @@ export class PostizClient {
       }
     }
     let timedOut = false;
+    let reachedServer = false;
     const timeoutSignal = controller.signal;
     timeoutSignal.addEventListener(
       "abort",
@@ -411,6 +461,7 @@ export class PostizClient {
         headers,
         signal: controller.signal,
       });
+      reachedServer = true;
       this.captureRateLimit(res.headers);
       const text = await res.text();
       if (!res.ok) {
@@ -419,6 +470,9 @@ export class PostizClient {
         }
         if (res.status === 429) {
           const retryAfterSec = parseRetryAfter(res.headers.get("retry-after"));
+          // Wire 429 into the local guard so the next call doesn't immediately
+          // hammer another 429 when the server didn't ship X-RateLimit-* headers.
+          this.applyRetryAfter(retryAfterSec);
           throw new PostizApiError(
             429,
             path,
@@ -432,7 +486,6 @@ export class PostizClient {
         const { code, message } = parseErrorBody(text, res.status);
         throw new PostizApiError(res.status, path, code, this.redact(message));
       }
-      this.recordSlidingSend();
       if (!text) return {} as T;
       try {
         return JSON.parse(text) as T;
@@ -440,6 +493,13 @@ export class PostizClient {
         return text as unknown as T;
       }
     } catch (err) {
+      // The request never landed at Postiz; refund the slot. 5xx, 429, and
+      // CF Access challenges all set reachedServer=true so they keep the
+      // reservation (the call counted against API quota even if it errored).
+      if (!reachedServer && reservation !== undefined) {
+        this.releaseSlot(reservation);
+        reservation = undefined;
+      }
       if (err instanceof PostizApiError) throw err;
       if (err instanceof PostizCfAccessChallengeError) throw err;
       if (timedOut) throw new PostizTimeoutError(path, this.timeoutMs);
@@ -467,8 +527,13 @@ export class PostizClient {
         this.rate.resetAt = null;
       }
       if (this.rate.remaining <= 0) {
+        // If the server reported 0 remaining without a reset time, project a
+        // 1h fallback rather than blocking forever - older Postiz builds emit
+        // x-ratelimit-remaining without x-ratelimit-reset.
+        const projectedReset =
+          this.rate.resetAt ?? Date.now() + 60 * 60 * 1000;
         throw new PostizRateLimitGuardError(
-          this.rate.resetAt,
+          projectedReset,
           this.rate.limitPerHour,
         );
       }
@@ -476,7 +541,44 @@ export class PostizClient {
     }
     this.pruneSlidingWindow();
     if (this.recentSends.length < this.rate.limitPerHour) return;
-    throw new PostizRateLimitGuardError(null, this.rate.limitPerHour);
+    const oldest = this.recentSends[0];
+    const projectedReset = oldest + 60 * 60 * 1000;
+    throw new PostizRateLimitGuardError(projectedReset, this.rate.limitPerHour);
+  }
+
+  /** Reserve a slot pre-flight. Returns the timestamp pushed into the
+   *  sliding window so callers can release on local-only failure. */
+  private reserveSlot(): number {
+    const ts = Date.now();
+    this.recentSends.push(ts);
+    if (this.serverProvidesRateLimit) {
+      this.rate.remaining = Math.max(0, this.rate.remaining - 1);
+    }
+    return ts;
+  }
+
+  /** Refund a reservation when the request never reached the server.
+   *  Removes the matching timestamp; in server-mode also bumps `remaining`
+   *  back. Idempotent if the timestamp was already pruned. */
+  private releaseSlot(ts: number): void {
+    const idx = this.recentSends.indexOf(ts);
+    if (idx >= 0) this.recentSends.splice(idx, 1);
+    if (this.serverProvidesRateLimit) {
+      this.rate.remaining = Math.min(
+        this.rate.limitPerHour,
+        this.rate.remaining + 1,
+      );
+    }
+  }
+
+  /** Wire a 429 Retry-After value into the local guard so subsequent calls
+   *  block until at least that timestamp instead of hammering 429s. */
+  private applyRetryAfter(retryAfterSec: number | undefined): void {
+    if (!retryAfterSec || retryAfterSec <= 0) return;
+    this.serverProvidesRateLimit = true;
+    this.rate.remaining = 0;
+    const projected = Date.now() + retryAfterSec * 1000;
+    this.rate.resetAt = Math.max(this.rate.resetAt ?? 0, projected);
   }
 
   private captureRateLimit(headers: Headers): void {
@@ -509,17 +611,6 @@ export class PostizClient {
     if (sawAny) this.serverProvidesRateLimit = true;
   }
 
-  private recordSlidingSend(): void {
-    // Always track timestamps so the sliding-window fallback has data, even
-    // if the server starts/stops sending headers mid-session.
-    this.recentSends.push(Date.now());
-    if (this.serverProvidesRateLimit) return;
-    this.rate.remaining = Math.max(
-      0,
-      this.rate.limitPerHour - this.recentSends.length,
-    );
-  }
-
   private pruneSlidingWindow(): void {
     const cutoff = Date.now() - 60 * 60 * 1000;
     while (this.recentSends.length && this.recentSends[0] < cutoff) {
@@ -530,6 +621,10 @@ export class PostizClient {
 
 function isSafeId(id: string): boolean {
   return /^[A-Za-z0-9_-]+$/.test(id) && id.length > 0 && id.length < 256;
+}
+
+function isSafeProviderSlug(slug: string): boolean {
+  return /^[a-z0-9-]+$/.test(slug) && slug.length > 0 && slug.length < 64;
 }
 
 function toUint8Array(buf: Uint8Array | Buffer): Uint8Array {

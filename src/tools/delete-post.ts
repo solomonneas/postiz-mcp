@@ -9,7 +9,7 @@ const Schema = Type.Object(
     postId: Type.String({ description: "Post id to delete." }),
     confirm: Type.Boolean({
       description:
-        "Must be true. Deletion cascades to every post in the same `group` (Postiz cross-post unit). Posts already published on the platform are NOT recalled — they remain live; only the Postiz record is removed.",
+        "Must be true. Deletion cascades to every post in the same `group` (Postiz cross-post unit). Posts already published on the platform are NOT recalled - they remain live; only the Postiz record is removed.",
     }),
   },
   { additionalProperties: false },
@@ -23,7 +23,7 @@ export function createDeletePostTool(
     name: "postiz_delete_post",
     label: "postiz: delete post",
     description:
-      "Delete a Postiz post by id. CASCADES — every post in the same group is removed. Already-published platform posts remain live. Requires enableWrite + enableDelete + confirm=true.",
+      "Delete a Postiz post by id via DELETE /api/public/v1/posts/{id}. CASCADES: every post in the same group is removed. Already-published platform posts remain live. Requires enableWrite + enableDelete + confirm=true.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireDeleteGate(config, "postiz_delete_post");

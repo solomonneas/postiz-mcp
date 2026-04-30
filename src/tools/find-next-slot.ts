@@ -17,7 +17,7 @@ export function createFindNextSlotTool(getClient: () => PostizClient) {
     name: "postiz_find_next_slot",
     label: "postiz: find next slot",
     description:
-      "Return the next available posting time for a given integration. The slot respects the org's configured posting schedule, so this is the right answer to use as `date` in postiz_create_post when you don't have a specific time in mind.",
+      "Return the next available posting time for a given integration via GET /api/public/v1/find-slot/{id}. The slot respects the org's configured posting schedule, so this is the right answer to use as `date` in postiz_create_post when you don't have a specific time in mind.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       const { integrationId } = raw as { integrationId: string };

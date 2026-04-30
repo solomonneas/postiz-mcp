@@ -28,7 +28,7 @@ export function createGetProviderSettingsSchemaTool(
     name: "postiz_get_provider_settings_schema",
     label: "postiz: get provider settings schema",
     description:
-      "Look up the `settings` block schema for a Postiz provider (X, LinkedIn, Reddit, etc.) — bundled at build time from docs.postiz.com. Returns a default-settings template, the provider's `__type` value, and (by default) the full markdown reference. Call this before postiz_create_post when you need provider-specific fields.",
+      "Look up the `settings` block schema for a Postiz provider (X, LinkedIn, Reddit, etc.) - bundled at build time from docs.postiz.com. Returns a default-settings template, the provider's `__type` value, and (by default) the full markdown reference. Call this before postiz_create_post when you need provider-specific fields.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       const { provider, includeMarkdown } = raw as {

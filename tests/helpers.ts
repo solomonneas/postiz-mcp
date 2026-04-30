@@ -33,6 +33,8 @@ export function makeTestConfig(
     enableDelete: false,
     requestTimeoutMs: 5_000,
     rateLimitPerHour: 30,
+    uploadRoots: [],
+    maxUploadBytes: 100 * 1024 * 1024,
     cfAccessClientIdEnv: "POSTIZ_CF_ACCESS_CLIENT_ID",
     cfAccessClientSecretEnv: "POSTIZ_CF_ACCESS_CLIENT_SECRET",
     ...overrides,

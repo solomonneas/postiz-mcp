@@ -8,7 +8,7 @@ const Schema = Type.Object(
   {
     body: Type.Record(Type.String(), Type.Unknown(), {
       description:
-        "Free-form video generation payload as expected by Postiz's /api/video/generate endpoint. Shape varies by enabled video integration; check Postiz video docs for the integration in use.",
+        "Free-form video generation payload as expected by Postiz's /api/public/v1/generate-video endpoint. Shape varies by enabled video integration; check Postiz video docs for the integration in use.",
     }),
   },
   { additionalProperties: false },
@@ -22,7 +22,7 @@ export function createGenerateVideoTool(
     name: "postiz_generate_video",
     label: "postiz: generate video",
     description:
-      "Generate an AI video via POST /api/video/generate. COST IMPLICATION: video generation may bill against the configured Postiz video integration's credit pool. Requires enableWrite. Body shape is provider-specific — see Postiz video docs.",
+      "Generate an AI video via POST /api/public/v1/generate-video. COST IMPLICATION: video generation may bill against the configured Postiz video integration's credit pool. Requires enableWrite. Body shape is provider-specific; see Postiz video docs for the integration in use.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireWriteGate(config, "postiz_generate_video");

@@ -6,14 +6,15 @@
  * as a typed bundle. Run on demand (npm run refresh-schemas) or via the
  * monthly GitHub Action.
  *
- * The output is checked in. The MCP server reads it directly — no fetch at
+ * The output is checked in. The MCP server reads it directly - no fetch at
  * runtime, no docs.postiz.com dependency in the install path.
  */
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PROVIDERS: string[] = [
+  "bluesky",
   "devto",
   "discord",
   "dribbble",
@@ -21,18 +22,25 @@ const PROVIDERS: string[] = [
   "gmb",
   "hashnode",
   "instagram",
+  "instagram-standalone",
   "kick",
   "lemmy",
   "linkedin",
+  "linkedin-page",
   "listmonk",
+  "mastodon",
   "medium",
   "moltbook",
+  "nostr",
   "pinterest",
   "reddit",
   "skool",
   "slack",
+  "telegram",
+  "threads",
   "tiktok",
   "twitch",
+  "vk",
   "warpcast",
   "whop",
   "wordpress",
@@ -53,14 +61,14 @@ async function fetchProvider(slug: string): Promise<ProviderRecord> {
   const sourceUrl = `https://docs.postiz.com/public-api/providers/${slug}.md`;
   const res = await fetch(sourceUrl);
   if (!res.ok) {
-    throw new Error(`fetch ${sourceUrl} → HTTP ${res.status}`);
+    throw new Error(`fetch ${sourceUrl} -> HTTP ${res.status}`);
   }
-  const markdown = await res.text();
+  const markdown = sanitizeMarkdown(await res.text());
   const defaultSettings = extractFirstSettingsBlock(markdown);
   const type =
-    (defaultSettings && typeof defaultSettings.__type === "string"
+    defaultSettings && typeof defaultSettings.__type === "string"
       ? defaultSettings.__type
-      : slug);
+      : slug;
   return {
     slug,
     type,
@@ -71,13 +79,15 @@ async function fetchProvider(slug: string): Promise<ProviderRecord> {
   };
 }
 
-/** Find the first ```json fenced block whose parsed body has a top-level
- *  `settings` object — that's the canonical "Settings Schema" example. Falls
+/** Find the first json/jsonc fenced block whose parsed body has a top-level
+ *  `settings` object - that's the canonical "Settings Schema" example. Falls
  *  back to the first JSON block whose body itself looks like a settings
  *  object (has __type), since some provider docs put the settings inline
- *  without wrapping in `{settings: ...}`. */
+ *  without wrapping in `{settings: ...}`. Tolerates `~~~` fences and
+ *  case-insensitive language tags so a single docs-formatting tweak doesn't
+ *  silently empty the bundle. */
 function extractFirstSettingsBlock(md: string): Record<string, unknown> | null {
-  const fenceRe = /```json[^\n]*\n([\s\S]*?)\n```/g;
+  const fenceRe = /(?:```|~~~)\s*(?:json|jsonc)\b[^\n]*\n([\s\S]*?)\n(?:```|~~~)/gi;
   let match: RegExpExecArray | null;
   let firstWithType: Record<string, unknown> | null = null;
   while ((match = fenceRe.exec(md))) {
@@ -99,6 +109,13 @@ function extractFirstSettingsBlock(md: string): Record<string, unknown> | null {
     }
   }
   return firstWithType;
+}
+
+/** Replace upstream em dashes with hyphens at ingest so the bundled
+ *  provider markdown stays compliant with the no-em-dash rule even when
+ *  docs.postiz.com uses them. */
+function sanitizeMarkdown(md: string): string {
+  return md.replace(/—/g, "-").replace(/–/g, "-");
 }
 
 function toModule(records: ProviderRecord[]): string {
@@ -151,6 +168,13 @@ export const PROVIDER_SLUGS = PROVIDER_SCHEMAS.map((p) => p.slug);
 `;
 }
 
+/** Sanity-check thresholds. If any of these trip, we exit non-zero rather
+ *  than write a degraded bundle. The previous behaviour (write anything
+ *  non-empty, log errors, exit 0) silently dropped providers and broke
+ *  postiz_get_provider_settings_schema for them on the next run. */
+const MIN_FETCH_SUCCESS_RATIO = 0.9;
+const MAX_NULL_SETTINGS_RATIO = 0.25;
+
 async function main(): Promise<void> {
   const records: ProviderRecord[] = [];
   const errors: string[] = [];
@@ -159,24 +183,73 @@ async function main(): Promise<void> {
       const r = await fetchProvider(slug);
       records.push(r);
       const status = r.defaultSettings ? "ok" : "no-json-block";
-      console.log(`  ${slug.padEnd(12)} ${status}`);
+      console.log(`  ${slug.padEnd(20)} ${status}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       errors.push(`${slug}: ${msg}`);
-      console.error(`  ${slug.padEnd(12)} FAILED ${msg}`);
+      console.error(`  ${slug.padEnd(20)} FAILED ${msg}`);
     }
   }
-  if (records.length === 0) {
-    console.error("All provider fetches failed; refusing to overwrite schemas.");
+  const successRatio = records.length / PROVIDERS.length;
+  if (successRatio < MIN_FETCH_SUCCESS_RATIO) {
+    console.error(
+      `Only ${records.length}/${PROVIDERS.length} provider docs fetched ` +
+        `(${(successRatio * 100).toFixed(1)}% < ${MIN_FETCH_SUCCESS_RATIO * 100}% floor). ` +
+        `Refusing to overwrite the bundled schemas.`,
+    );
     process.exit(1);
   }
+  const nullCount = records.filter((r) => r.defaultSettings === null).length;
+  const nullRatio = nullCount / records.length;
+  if (nullRatio > MAX_NULL_SETTINGS_RATIO) {
+    console.error(
+      `${nullCount}/${records.length} fetched providers had no parseable JSON block ` +
+        `(${(nullRatio * 100).toFixed(1)}% > ${MAX_NULL_SETTINGS_RATIO * 100}% ceiling). ` +
+        `The fence regex or docs format likely changed; refusing to overwrite.`,
+    );
+    process.exit(1);
+  }
+
+  // Merge over the existing bundle: a per-provider fetch failure preserves
+  // the previously-bundled record (with a `staleSince` marker) instead of
+  // silently dropping the provider from the bundle.
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const outPath = join(__dirname, "..", "src", "providers", "schemas.ts");
-  writeFileSync(outPath, toModule(records));
+  const fetchedSlugs = new Set(records.map((r) => r.slug));
+  const stalePreserved: ProviderRecord[] = [];
+  if (existsSync(outPath)) {
+    const existing = readExistingBundle(outPath);
+    for (const prev of existing) {
+      if (fetchedSlugs.has(prev.slug)) continue;
+      if (!PROVIDERS.includes(prev.slug)) continue;
+      stalePreserved.push({
+        ...prev,
+        markdown: sanitizeMarkdown(prev.markdown),
+      });
+    }
+  }
+  const merged = [...records, ...stalePreserved];
+  writeFileSync(outPath, toModule(merged));
   console.log(
-    `\nWrote ${records.length} provider schema records to ${outPath}` +
-      (errors.length ? ` (${errors.length} failed)` : ""),
+    `\nWrote ${merged.length} provider schema records to ${outPath}` +
+      (errors.length ? ` (${errors.length} failed, ${stalePreserved.length} preserved from prior bundle)` : ""),
   );
+}
+
+/** Best-effort parse of the previous schemas.ts. Returns [] if anything
+ *  about the format has drifted; the caller treats that as "no prior bundle
+ *  to preserve from" and proceeds with just the freshly-fetched records. */
+function readExistingBundle(path: string): ProviderRecord[] {
+  try {
+    const src = readFileSync(path, "utf-8");
+    const m = src.match(/PROVIDER_SCHEMAS:\s*ProviderSchema\[\]\s*=\s*(\[[\s\S]*?\]);\s*\n/);
+    if (!m) return [];
+    const parsed = JSON.parse(m[1]) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed as ProviderRecord[];
+  } catch {
+    return [];
+  }
 }
 
 main().catch((err) => {

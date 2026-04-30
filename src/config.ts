@@ -5,7 +5,7 @@ export interface PostizPluginConfig {
   apiKeyInline: string;
   apiKeyEnv: string;
   /** Gate for create/update tools (create_post, update_*, connect_integration,
-   *  upload_file, upload_from_url, generate_video). Off by default — every
+   *  upload_file, upload_from_url, generate_video). Off by default - every
    *  tool that lands on a real social account or burns API credits is gated. */
   enableWrite: boolean;
   /** Second gate for delete tools (delete_post, delete_post_group,
@@ -14,6 +14,13 @@ export interface PostizPluginConfig {
   enableDelete: boolean;
   requestTimeoutMs: number;
   rateLimitPerHour: number;
+  /** Upload-file allowlist roots. Empty array (the default) means filePath
+   *  uploads are disabled and the agent must use base64 input.
+   *  POSTIZ_UPLOAD_ROOTS (comma- or colon-separated) overrides at runtime. */
+  uploadRoots: string[];
+  /** Hard cap on a single upload's byte size, defended at the tool layer to
+   *  prevent OOMing the MCP host on a 4 GiB video path. */
+  maxUploadBytes: number;
   cfAccessClientIdInline?: string;
   cfAccessClientSecretInline?: string;
   cfAccessClientIdEnv: string;
@@ -42,6 +49,16 @@ export function resolveConfig(raw: unknown): PostizPluginConfig {
       typeof c.requestTimeoutMs === "number" ? c.requestTimeoutMs : 30_000,
     rateLimitPerHour:
       typeof c.rateLimitPerHour === "number" ? c.rateLimitPerHour : 30,
+    uploadRoots: Array.isArray(c.uploadRoots)
+      ? c.uploadRoots
+          .filter((r): r is string => typeof r === "string")
+          .map((r) => r.trim())
+          .filter(Boolean)
+      : [],
+    maxUploadBytes:
+      typeof c.maxUploadBytes === "number" && c.maxUploadBytes > 0
+        ? c.maxUploadBytes
+        : 100 * 1024 * 1024,
     cfAccessClientIdInline:
       typeof c.cfAccessClientId === "string" && c.cfAccessClientId.trim()
         ? c.cfAccessClientId.trim()

@@ -12,7 +12,7 @@ const Schema = Type.Object(
     }),
     confirm: Type.Boolean({
       description:
-        "Must be true to actually disconnect. Postiz also removes every scheduled post tied to this integration. Irreversible — re-connecting requires a fresh OAuth flow.",
+        "Must be true to actually disconnect. Postiz also removes every scheduled post tied to this integration. Irreversible: re-connecting requires a fresh OAuth flow.",
     }),
   },
   { additionalProperties: false },
@@ -26,7 +26,7 @@ export function createDeleteIntegrationTool(
     name: "postiz_delete_integration",
     label: "postiz: delete integration",
     description:
-      "Disconnect a connected social channel. Cascades — Postiz also deletes every scheduled post for that integration. Requires enableWrite + enableDelete + confirm=true. Returns ok:false / not_found on 404 (already disconnected).",
+      "Disconnect a connected social channel via DELETE /api/public/v1/integrations/{id}. Cascades: Postiz also deletes every scheduled post for that integration. Requires enableWrite + enableDelete + confirm=true. Returns ok:false / not_found on 404 (already disconnected).",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireDeleteGate(config, "postiz_delete_integration");

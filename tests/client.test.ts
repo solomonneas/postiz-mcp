@@ -8,7 +8,7 @@ import {
 import { makeFakeFetch } from "./helpers-fetch.ts";
 import { TEST_API_KEY, TEST_BASE_URL, makeTestClient } from "./helpers.ts";
 
-describe("PostizClient — request shape", () => {
+describe("PostizClient - request shape", () => {
   let fake: ReturnType<typeof makeFakeFetch>;
   afterEach(() => fake?.restore());
 
@@ -58,7 +58,7 @@ describe("PostizClient — request shape", () => {
   });
 });
 
-describe("PostizClient — error handling", () => {
+describe("PostizClient - error handling", () => {
   let fake: ReturnType<typeof makeFakeFetch>;
   afterEach(() => fake?.restore());
 
@@ -70,6 +70,27 @@ describe("PostizClient — error handling", () => {
     });
     const client = makeTestClient();
     await expect(client.listIntegrations()).rejects.toThrow(/REDACTED/);
+  });
+
+  it("redacts CF Access client secret from error messages", async () => {
+    fake = makeFakeFetch();
+    const cfSecret = "cf-secret-very-long-token-abc123";
+    fake.queue({
+      status: 500,
+      body: { message: `internal error reflected secret=${cfSecret} ...` },
+    });
+    const client = makeTestClient({
+      cfAccessClientId: "cf-id-12345678",
+      cfAccessClientSecret: cfSecret,
+    });
+    let captured: string | undefined;
+    try {
+      await client.listIntegrations();
+    } catch (err) {
+      captured = err instanceof Error ? err.message : String(err);
+    }
+    expect(captured).toContain("REDACTED");
+    expect(captured).not.toContain(cfSecret);
   });
 
   it("normalizes 4xx into PostizApiError with code + path", async () => {
@@ -137,7 +158,7 @@ describe("PostizClient — error handling", () => {
   });
 });
 
-describe("PostizClient — rate-limit tracking + guard", () => {
+describe("PostizClient - rate-limit tracking + guard", () => {
   let fake: ReturnType<typeof makeFakeFetch>;
   afterEach(() => fake?.restore());
 
@@ -188,5 +209,84 @@ describe("PostizClient — rate-limit tracking + guard", () => {
     await expect(client.listIntegrations()).rejects.toBeInstanceOf(
       PostizRateLimitGuardError,
     );
+  });
+
+  it("reserves slots pre-flight so concurrent calls cannot overshoot the budget", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient({ rateLimitPerHour: 3 });
+    // Queue 3 successful responses; the 4th concurrent caller should never
+    // hit the network because the local guard reserved a slot for the first
+    // 3 before any of them awaited.
+    for (let i = 0; i < 3; i++) fake.queue({ status: 200, body: [] });
+    const calls = [
+      client.listIntegrations(),
+      client.listIntegrations(),
+      client.listIntegrations(),
+      client.listIntegrations(),
+    ];
+    const results = await Promise.allSettled(calls);
+    const rejected = results.filter((r) => r.status === "rejected");
+    expect(rejected).toHaveLength(1);
+    const reason = (rejected[0] as PromiseRejectedResult).reason;
+    expect(reason).toBeInstanceOf(PostizRateLimitGuardError);
+    expect(fake.calls).toHaveLength(3);
+  });
+
+  it("releases the reservation when the request never reached the server", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ rejectWith: new Error("network refused") });
+    fake.queue({ status: 200, body: [] });
+    const client = makeTestClient({ rateLimitPerHour: 1 });
+    await expect(client.listIntegrations()).rejects.toThrow(/network refused/);
+    // The first call's reservation should have been released since no
+    // response was ever received; the second call should now succeed.
+    await client.listIntegrations();
+    expect(fake.calls).toHaveLength(2);
+  });
+
+  it("a 429 with Retry-After updates the local guard so the next call blocks", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 429,
+      body: { message: "slow down" },
+      headers: { "Retry-After": "60" },
+    });
+    const client = makeTestClient({ rateLimitPerHour: 30 });
+    await expect(client.listIntegrations()).rejects.toBeInstanceOf(
+      PostizApiError,
+    );
+    // Without queueing another response, the next call should be blocked
+    // locally before fetching anything. Asserting that fake.calls only
+    // grew by 1 confirms the local guard fired.
+    await expect(client.listIntegrations()).rejects.toBeInstanceOf(
+      PostizRateLimitGuardError,
+    );
+    expect(fake.calls).toHaveLength(1);
+    const rl = client.getRateLimit();
+    expect(rl.remaining).toBe(0);
+    expect(rl.resetAt).not.toBeNull();
+  });
+
+  it("server zero-remaining without a reset header projects a 1h fallback instead of blocking forever", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: [],
+      headers: { "X-RateLimit-Remaining": "0" },
+    });
+    const client = makeTestClient({ rateLimitPerHour: 30 });
+    await client.listIntegrations();
+    let captured: PostizRateLimitGuardError | undefined;
+    try {
+      await client.listIntegrations();
+    } catch (err) {
+      captured = err as PostizRateLimitGuardError;
+    }
+    expect(captured).toBeInstanceOf(PostizRateLimitGuardError);
+    expect(captured?.resetAt).not.toBeNull();
+    // resetAt should be roughly 1h from now (allow generous slack).
+    const expected = Date.now() + 60 * 60 * 1000;
+    const drift = Math.abs((captured!.resetAt ?? 0) - expected);
+    expect(drift).toBeLessThan(5_000);
   });
 });
