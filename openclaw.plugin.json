@@ -1,0 +1,100 @@
+{
+  "id": "postiz",
+  "name": "Postiz",
+  "description": "Full-coverage Postiz client for OpenClaw agents: integrations, posts (create / list / update / delete), uploads, analytics, and video. Env-gated writes, confirm-required deletes, built-in 30/hr rate-limit guard, bundled per-provider settings schemas.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["baseUrl"],
+    "properties": {
+      "baseUrl": {
+        "type": "string",
+        "format": "uri",
+        "description": "Base URL of the Postiz instance, e.g. http://localhost:5000 or https://postiz.example.com."
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "Postiz public API key. Leave blank and set POSTIZ_API_KEY (or your custom apiKeyEnv) in the environment instead."
+      },
+      "apiKeyEnv": {
+        "type": "string",
+        "default": "POSTIZ_API_KEY",
+        "description": "Environment variable to read the API key from when apiKey is blank."
+      },
+      "enableWrite": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable create / update / upload / connect / generate-video tools. Off by default. Postiz writes are public side effects on real social accounts; this gate forces explicit opt-in. Does NOT enable delete tools."
+      },
+      "enableDelete": {
+        "type": "boolean",
+        "default": false,
+        "description": "Second gate for delete tools (delete-post, delete-post-group, delete-integration). Off by default. Required IN ADDITION to enableWrite. Each delete tool also requires `confirm: true` in the call args. delete-integration cascades and removes every scheduled post for the integration; delete-post cascades to the whole group."
+      },
+      "requestTimeoutMs": {
+        "type": "number",
+        "minimum": 1000,
+        "default": 30000,
+        "description": "HTTP timeout for Postiz API calls."
+      },
+      "rateLimitPerHour": {
+        "type": "number",
+        "minimum": 1,
+        "default": 30,
+        "description": "Local rate-limit ceiling. Postiz public API defaults to 30/hr; raise this if your instance is configured higher. The client refuses to send when the local counter shows 0."
+      },
+      "cfAccessClientId": {
+        "type": "string",
+        "description": "Cloudflare Access service-token client id, when Postiz is behind a CF Access policy. Leave blank and use the env var (cfAccessClientIdEnv) for production deploys."
+      },
+      "cfAccessClientSecret": {
+        "type": "string",
+        "description": "Cloudflare Access service-token secret. Same handling as cfAccessClientId."
+      },
+      "cfAccessClientIdEnv": {
+        "type": "string",
+        "default": "POSTIZ_CF_ACCESS_CLIENT_ID",
+        "description": "Environment variable holding the CF Access client id when cfAccessClientId is blank."
+      },
+      "cfAccessClientSecretEnv": {
+        "type": "string",
+        "default": "POSTIZ_CF_ACCESS_CLIENT_SECRET",
+        "description": "Environment variable holding the CF Access client secret when cfAccessClientSecret is blank."
+      }
+    }
+  },
+  "uiHints": {
+    "baseUrl": {
+      "label": "Base URL",
+      "help": "Your Postiz instance (e.g. http://localhost:5000). Use the LAN-direct path when possible; CF Access tunnels add latency and consume the rate-limit budget either way."
+    },
+    "apiKey": {
+      "label": "API Key",
+      "help": "Generate in Postiz under Settings → Public API. Prefer keyRef to an env var over an inline value."
+    },
+    "enableWrite": {
+      "label": "Enable Write Tools",
+      "help": "Exposes create-post, connect-integration, update-post-status, update-post-release-id, upload-file, upload-from-url, generate-video. PUBLIC SIDE EFFECT: with type='now' or near-term schedule, posts land on real social accounts."
+    },
+    "enableDelete": {
+      "label": "Enable Delete Tools",
+      "help": "Second gate for delete-post, delete-post-group, delete-integration. Off by default. Required IN ADDITION to enableWrite. Each delete also requires confirm:true in the call. Already-published platform posts cannot be recalled — only Postiz records are removed."
+    },
+    "requestTimeoutMs": {
+      "label": "Request Timeout (ms)",
+      "advanced": true
+    },
+    "rateLimitPerHour": {
+      "label": "Rate limit / hour",
+      "advanced": true
+    },
+    "cfAccessClientId": {
+      "label": "Cloudflare Access — Client ID",
+      "advanced": true
+    },
+    "cfAccessClientSecret": {
+      "label": "Cloudflare Access — Client Secret",
+      "advanced": true
+    }
+  }
+}

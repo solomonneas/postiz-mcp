@@ -1,0 +1,84 @@
+{
+  "name": "postiz-mcp",
+  "version": "0.1.0",
+  "description": "Canonical Postiz client for any MCP-compatible client: full coverage of the Postiz public API (integrations, posts, uploads, analytics, video) with env-gated writes, confirm-required deletes, and a built-in 30/hr rate-limit guard. MCP server + first-class OpenClaw plugin.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Solomon Neas <srneas@gmail.com>",
+  "keywords": [
+    "postiz",
+    "mcp",
+    "model-context-protocol",
+    "openclaw",
+    "social-media",
+    "scheduling",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solomonneas/postiz-mcp.git"
+  },
+  "homepage": "https://github.com/solomonneas/postiz-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/solomonneas/postiz-mcp/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "bin": {
+    "postiz-mcp": "dist/mcp-server.js"
+  },
+  "main": "dist/mcp-server.js",
+  "files": [
+    "dist",
+    "index.ts",
+    "src",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2",
+      "minGatewayVersion": "2026.3.24-beta.2"
+    },
+    "build": {
+      "openclawVersion": "2026.4.22",
+      "pluginSdkVersion": "2026.4.22"
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@sinclair/typebox": "^0.34.0",
+    "zod": "^4.3.0"
+  },
+  "peerDependencies": {
+    "openclaw": "*"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "openclaw": "^2026.4.22",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.1.5"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsup",
+    "start": "node dist/mcp-server.js",
+    "dev": "tsx mcp-server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "refresh-schemas": "tsx scripts/fetch-provider-schemas.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  }
+}
