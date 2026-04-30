@@ -43,6 +43,18 @@
         "default": 30,
         "description": "Local rate-limit ceiling. Postiz public API defaults to 30/hr; raise this if your instance is configured higher. The client refuses to send when the local counter shows 0."
       },
+      "uploadRoots": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": [],
+        "description": "Allowlist of directory roots that postiz_upload_file accepts filePath uploads from. Empty array (the default) disables filePath uploads entirely; agents must supply base64. POSTIZ_UPLOAD_ROOTS (comma- or colon-separated) overrides at runtime."
+      },
+      "maxUploadBytes": {
+        "type": "number",
+        "minimum": 1,
+        "default": 104857600,
+        "description": "Hard byte cap for any single upload (filePath or base64). Defended at the tool layer to prevent OOMing the MCP host. Default 100 MiB."
+      },
       "cfAccessClientId": {
         "type": "string",
         "description": "Cloudflare Access service-token client id, when Postiz is behind a CF Access policy. Leave blank and use the env var (cfAccessClientIdEnv) for production deploys."
@@ -78,7 +90,7 @@
     },
     "enableDelete": {
       "label": "Enable Delete Tools",
-      "help": "Second gate for delete-post, delete-post-group, delete-integration. Off by default. Required IN ADDITION to enableWrite. Each delete also requires confirm:true in the call. Already-published platform posts cannot be recalled — only Postiz records are removed."
+      "help": "Second gate for delete-post, delete-post-group, delete-integration. Off by default. Required IN ADDITION to enableWrite. Each delete also requires confirm:true in the call. Already-published platform posts cannot be recalled; only Postiz records are removed."
     },
     "requestTimeoutMs": {
       "label": "Request Timeout (ms)",
@@ -88,12 +100,21 @@
       "label": "Rate limit / hour",
       "advanced": true
     },
+    "uploadRoots": {
+      "label": "Upload roots (filePath allowlist)",
+      "help": "Directory roots that postiz_upload_file accepts filePath uploads from. Leave empty to require base64 input.",
+      "advanced": true
+    },
+    "maxUploadBytes": {
+      "label": "Max upload size (bytes)",
+      "advanced": true
+    },
     "cfAccessClientId": {
-      "label": "Cloudflare Access — Client ID",
+      "label": "Cloudflare Access - Client ID",
       "advanced": true
     },
     "cfAccessClientSecret": {
-      "label": "Cloudflare Access — Client Secret",
+      "label": "Cloudflare Access - Client Secret",
       "advanced": true
     }
   }

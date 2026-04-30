@@ -11,11 +11,11 @@ import { createListVoicesTool } from "../src/tools/list-voices.ts";
 import { TEST_BASE_URL, makeTestClient } from "./helpers.ts";
 import { makeFakeFetch } from "./helpers-fetch.ts";
 
-describe("read tools — request shape + result", () => {
+describe("read tools - request shape + result", () => {
   let fake: ReturnType<typeof makeFakeFetch>;
   afterEach(() => fake?.restore());
 
-  it("postiz_list_integrations hits /api/integrations/list", async () => {
+  it("postiz_list_integrations hits /api/public/v1/integrations", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: [{ id: "abc", name: "X" }] });
     const client = makeTestClient();
@@ -30,26 +30,45 @@ describe("read tools — request shape + result", () => {
     expect((res.details as { rateLimit: unknown }).rateLimit).toBeDefined();
   });
 
-  it("postiz_check_integration hits /api/integrations/check", async () => {
+  it("postiz_check_integration hits /is-connected and reports ok=true on success", async () => {
     fake = makeFakeFetch();
-    fake.queue({ status: 200, body: { name: "main-org" } });
+    fake.queue({ status: 200, body: { connected: true } });
     const client = makeTestClient();
     const tool = createCheckIntegrationTool(() => client);
     const res = await tool.execute("t", {});
     expect(fake.calls[0].url).toBe(
-      `${TEST_BASE_URL}/api/public/v1/integrations/check`,
+      `${TEST_BASE_URL}/api/public/v1/is-connected`,
     );
     expect((res.details as { ok: boolean }).ok).toBe(true);
   });
 
-  it("postiz_find_next_slot encodes integrationId in query string", async () => {
+  it("postiz_check_integration reports ok=false with explicit connected:false", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { connected: false } });
+    const client = makeTestClient();
+    const tool = createCheckIntegrationTool(() => client);
+    const res = await tool.execute("t", {});
+    expect((res.details as { ok: boolean }).ok).toBe(false);
+  });
+
+  it("postiz_check_integration reports ok=false on 401/403 instead of throwing", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 401, body: { message: "bad key" } });
+    const client = makeTestClient();
+    const tool = createCheckIntegrationTool(() => client);
+    const res = await tool.execute("t", {});
+    expect((res.details as { ok: boolean; reason: string }).ok).toBe(false);
+    expect((res.details as { reason: string }).reason).toBe("unauthorized");
+  });
+
+  it("postiz_find_next_slot uses /find-slot/{id} path-param", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: { date: "2026-05-01T14:00:00.000Z" } });
     const client = makeTestClient();
     const tool = createFindNextSlotTool(() => client);
     await tool.execute("t", { integrationId: "abc-123" });
     expect(fake.calls[0].url).toBe(
-      `${TEST_BASE_URL}/api/public/v1/integrations/find-slot?id=abc-123`,
+      `${TEST_BASE_URL}/api/public/v1/find-slot/abc-123`,
     );
   });
 
@@ -63,7 +82,7 @@ describe("read tools — request shape + result", () => {
     expect(fake.calls).toHaveLength(0);
   });
 
-  it("postiz_list_posts forwards window params", async () => {
+  it("postiz_list_posts forwards startDate/endDate without /api spec extras", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: [] });
     const client = makeTestClient();
@@ -71,7 +90,7 @@ describe("read tools — request shape + result", () => {
     await tool.execute("t", {
       startDate: "2026-04-01T00:00:00.000Z",
       endDate: "2026-04-30T00:00:00.000Z",
-      display: "week",
+      window: "week",
     });
     expect(fake.calls[0].url).toContain(
       "startDate=2026-04-01T00%3A00%3A00.000Z",
@@ -79,7 +98,8 @@ describe("read tools — request shape + result", () => {
     expect(fake.calls[0].url).toContain(
       "endDate=2026-04-30T00%3A00%3A00.000Z",
     );
-    expect(fake.calls[0].url).toContain("display=week");
+    // `display` is not in the public-API spec; it must NOT be forwarded.
+    expect(fake.calls[0].url).not.toContain("display=");
   });
 
   it("postiz_list_posts fills a default ISO window when none is supplied", async () => {
@@ -94,17 +114,17 @@ describe("read tools — request shape + result", () => {
     expect(fake.calls[0].url).toMatch(
       /endDate=\d{4}-\d{2}-\d{2}T\d{2}%3A\d{2}%3A\d{2}/,
     );
-    expect(fake.calls[0].url).toContain("display=week");
+    expect(fake.calls[0].url).not.toContain("display=");
   });
 
-  it("postiz_get_missing_content uses postId query", async () => {
+  it("postiz_get_missing_content uses /posts/{id}/missing", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: {} });
     const client = makeTestClient();
     const tool = createGetMissingContentTool(() => client);
     await tool.execute("t", { postId: "post-1" });
     expect(fake.calls[0].url).toBe(
-      `${TEST_BASE_URL}/api/public/v1/posts/missing-content?postId=post-1`,
+      `${TEST_BASE_URL}/api/public/v1/posts/post-1/missing`,
     );
   });
 
@@ -119,18 +139,18 @@ describe("read tools — request shape + result", () => {
     );
   });
 
-  it("postiz_get_platform_analytics passes integrationId + date", async () => {
+  it("postiz_get_platform_analytics passes integrationId + date as required string", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: { followers: 1234 } });
     const client = makeTestClient();
     const tool = createGetPlatformAnalyticsTool(() => client);
-    await tool.execute("t", { integrationId: "i1", date: 30 });
+    await tool.execute("t", { integrationId: "i1", date: "30" });
     expect(fake.calls[0].url).toBe(
       `${TEST_BASE_URL}/api/public/v1/analytics/i1?date=30`,
     );
   });
 
-  it("postiz_get_post_analytics hits /api/analytics/post", async () => {
+  it("postiz_get_post_analytics hits /analytics/post/{postId}", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: { likes: 10 } });
     const client = makeTestClient();
@@ -141,14 +161,19 @@ describe("read tools — request shape + result", () => {
     );
   });
 
-  it("postiz_list_voices uses functionName=voices", async () => {
+  it("postiz_list_voices POSTs /video/function with loadVoices + identifier", async () => {
     fake = makeFakeFetch();
     fake.queue({ status: 200, body: [] });
     const client = makeTestClient();
     const tool = createListVoicesTool(() => client);
-    await tool.execute("t", { integrationId: "i1" });
+    await tool.execute("t", { identifier: "image-text-slides" });
+    expect(fake.calls[0].method).toBe("POST");
     expect(fake.calls[0].url).toBe(
-      `${TEST_BASE_URL}/api/public/v1/video/function?functionName=voices&integrationId=i1`,
+      `${TEST_BASE_URL}/api/public/v1/video/function`,
     );
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      functionName: "loadVoices",
+      identifier: "image-text-slides",
+    });
   });
 });

@@ -28,13 +28,13 @@ import { createListVoicesTool } from "./src/tools/list-voices.ts";
 import { createGenerateVideoTool } from "./src/tools/generate-video.ts";
 import { createGetProviderSettingsSchemaTool } from "./src/tools/get-provider-settings-schema.ts";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 function readConfigFromEnv(): PostizPluginConfig {
   const baseUrl = (process.env.POSTIZ_URL ?? "").trim();
   if (!baseUrl) {
     throw new Error(
-      "POSTIZ_URL is required (e.g. http://192.168.4.89:5000 or https://postiz.example.com). Set it in your MCP client env config.",
+      "POSTIZ_URL is required (e.g. http://localhost:5000 or https://postiz.example.com). Set it in your MCP client env config.",
     );
   }
   const apiKeyEnv = (process.env.POSTIZ_API_KEY_ENV ?? "POSTIZ_API_KEY").trim() || "POSTIZ_API_KEY";
@@ -46,6 +46,10 @@ function readConfigFromEnv(): PostizPluginConfig {
   }
   const cfId = (process.env.POSTIZ_CF_ACCESS_CLIENT_ID ?? "").trim();
   const cfSecret = (process.env.POSTIZ_CF_ACCESS_CLIENT_SECRET ?? "").trim();
+  const uploadRoots = (process.env.POSTIZ_UPLOAD_ROOTS ?? "")
+    .split(/[,:]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
   return {
     baseUrl,
     apiKeyInline: apiKey,
@@ -54,6 +58,12 @@ function readConfigFromEnv(): PostizPluginConfig {
     enableDelete: parseBool(process.env.POSTIZ_ENABLE_DELETE) ?? false,
     requestTimeoutMs: parsePosInt("POSTIZ_REQUEST_TIMEOUT_MS", 30_000, 1000),
     rateLimitPerHour: parsePosInt("POSTIZ_RATE_LIMIT_PER_HOUR", 30, 1),
+    uploadRoots,
+    maxUploadBytes: parsePosInt(
+      "POSTIZ_MAX_UPLOAD_BYTES",
+      100 * 1024 * 1024,
+      1,
+    ),
     cfAccessClientIdInline: cfId || undefined,
     cfAccessClientSecretInline: cfSecret || undefined,
     cfAccessClientIdEnv: "POSTIZ_CF_ACCESS_CLIENT_ID",
@@ -133,8 +143,8 @@ async function main(): Promise<void> {
   bind(server, createListPostsTool(getClient), {
     startDate: z.string().optional().describe("ISO-8601 start of window."),
     endDate: z.string().optional().describe("ISO-8601 end of window."),
-    display: z.enum(["day", "week", "month"]).optional().describe(
-      "Convenience window when start/end omitted. Default 'week'.",
+    window: z.enum(["day", "week", "month"]).optional().describe(
+      "Convenience preset when start/end omitted. Default 'week'.",
     ),
     customer: z.string().optional().describe("Optional customer id (multi-tenant)."),
   });
@@ -146,15 +156,16 @@ async function main(): Promise<void> {
   });
   bind(server, createGetPlatformAnalyticsTool(getClient), {
     integrationId: z.string().describe("Integration id."),
-    date: z.number().int().min(1).max(365).optional().describe(
-      "Lookback in days. Postiz default applies when omitted.",
-    ),
+    date: z
+      .string()
+      .regex(/^[0-9]+$/)
+      .describe("Lookback in days as a string (e.g. '7', '30'). Required."),
   });
   bind(server, createGetPostAnalyticsTool(getClient), {
     postId: z.string().describe("Post id."),
   });
   bind(server, createListVoicesTool(getClient), {
-    integrationId: z.string().optional().describe("Optional integration id to scope the catalog."),
+    identifier: z.string().describe("Video-type identifier (e.g. 'image-text-slides')."),
   });
   bind(server, createGetProviderSettingsSchemaTool(getClient), {
     provider: z.string().describe("Provider slug or __type (e.g. 'x', 'linkedin')."),
@@ -166,7 +177,10 @@ async function main(): Promise<void> {
   // Writes (gated by enableWrite)
   bind(server, createConnectIntegrationTool(getClient, config), {
     provider: z.string().describe("Provider slug (e.g. 'x', 'linkedin')."),
-    refresh: z.boolean().optional().describe("Re-auth an existing integration. Default false."),
+    refresh: z
+      .string()
+      .optional()
+      .describe("Existing integration id to re-auth. Omit for a brand-new connection."),
   });
   bind(server, createCreatePostTool(getClient, config), {
     type: z.enum(["draft", "schedule", "now"]).describe(
@@ -199,11 +213,10 @@ async function main(): Promise<void> {
   bind(server, createUpdatePostReleaseIdTool(getClient, config), {
     postId: z.string(),
     releaseId: z.string(),
-    releaseURL: z.string().optional(),
   });
   bind(server, createUpdatePostStatusTool(getClient, config), {
     postId: z.string(),
-    state: z.enum(["DRAFT", "QUEUE"]),
+    status: z.enum(["draft", "schedule"]),
   });
   bind(server, createUploadFileTool(getClient, config), {
     filePath: z.string().optional().describe("Absolute path to a local file."),
@@ -223,7 +236,7 @@ async function main(): Promise<void> {
   // Deletes (gated by enableWrite + enableDelete + confirm=true)
   bind(server, createDeleteIntegrationTool(getClient, config), {
     integrationId: z.string(),
-    confirm: z.boolean().describe("Must be true. Cascades — scheduled posts removed."),
+    confirm: z.boolean().describe("Must be true. Cascades - scheduled posts removed."),
   });
   bind(server, createDeletePostTool(getClient, config), {
     postId: z.string(),

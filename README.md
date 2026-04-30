@@ -10,37 +10,37 @@ If you self-host Postiz and want Claude / Codex / OpenClaw / Hermes / any MCP cl
 
 ## Warnings before you wire this up
 
-- **Postiz writes are public side effects.** A successful `postiz_create_post` with `type: "now"` (or a near-term schedule) lands on real social accounts. Once published, posts can be deleted from Postiz but **the platform-side post stays live** — Postiz cannot recall it.
+- **Postiz writes are public side effects.** A successful `postiz_create_post` with `type: "now"` (or a near-term schedule) lands on real social accounts. Once published, posts can be deleted from Postiz but **the platform-side post stays live** - Postiz cannot recall it.
 - **The Postiz public API is rate-limited at 30 requests/hour by default.** This server tracks the limit locally and refuses to send when the budget is exhausted. Override with `POSTIZ_RATE_LIMIT_PER_HOUR` if your Postiz instance is configured higher.
 - **Writes and deletes are gated off by default.** Reads always work. To enable writes you must explicitly set `POSTIZ_ENABLE_WRITE=true`. To enable deletes you must additionally set `POSTIZ_ENABLE_DELETE=true` AND pass `confirm: true` in the tool call.
 
 ## Tools
 
 ### Reads (always on)
-- `postiz_list_integrations` — list connected channels
-- `postiz_check_integration` — verify API key
-- `postiz_find_next_slot` — next free posting slot for a channel
-- `postiz_list_posts` — posts in a date window
-- `postiz_get_missing_content` — recover platform content for a Postiz post with a missing `releaseId`
-- `postiz_list_notifications` — Postiz UI notifications
-- `postiz_get_platform_analytics` — followers / impressions / engagement
-- `postiz_get_post_analytics` — likes / comments / shares
-- `postiz_list_voices` — AI video voice catalog
-- `postiz_get_provider_settings_schema` — per-provider `settings` schema (X, LinkedIn, Reddit, etc.) bundled at build time
+- `postiz_list_integrations` - list connected channels
+- `postiz_check_integration` - verify API key
+- `postiz_find_next_slot` - next free posting slot for a channel
+- `postiz_list_posts` - posts in a date window
+- `postiz_get_missing_content` - recover platform content for a Postiz post with a missing `releaseId`
+- `postiz_list_notifications` - Postiz UI notifications
+- `postiz_get_platform_analytics` - followers / impressions / engagement
+- `postiz_get_post_analytics` - likes / comments / shares
+- `postiz_list_voices` - AI video voice catalog
+- `postiz_get_provider_settings_schema` - per-provider `settings` schema (X, LinkedIn, Reddit, etc.) bundled at build time
 
 ### Writes (require `POSTIZ_ENABLE_WRITE=true`)
-- `postiz_create_post` — schedule / publish-now / draft
-- `postiz_connect_integration` — generate OAuth URL for a new channel
-- `postiz_update_post_status` — toggle DRAFT ↔ QUEUE
-- `postiz_update_post_release_id` — reattach a Postiz post to its platform-side release
-- `postiz_upload_file` — multipart upload from local file or base64
-- `postiz_upload_from_url` — server-side fetch
-- `postiz_generate_video` — AI video generation
+- `postiz_create_post` - schedule / publish-now / draft
+- `postiz_connect_integration` - generate OAuth URL for a new channel
+- `postiz_update_post_status` - toggle DRAFT ↔ QUEUE
+- `postiz_update_post_release_id` - reattach a Postiz post to its platform-side release
+- `postiz_upload_file` - multipart upload from local file or base64
+- `postiz_upload_from_url` - server-side fetch
+- `postiz_generate_video` - AI video generation
 
 ### Deletes (require `POSTIZ_ENABLE_WRITE=true` + `POSTIZ_ENABLE_DELETE=true` + `confirm: true`)
-- `postiz_delete_post` — cascades to whole group
-- `postiz_delete_post_group` — delete every post in a cross-post group
-- `postiz_delete_integration` — disconnect channel + all its scheduled posts
+- `postiz_delete_post` - cascades to whole group
+- `postiz_delete_post_group` - delete every post in a cross-post group
+- `postiz_delete_integration` - disconnect channel + all its scheduled posts
 
 ## Install
 
@@ -63,14 +63,14 @@ Set these environment variables in your MCP client config:
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `POSTIZ_URL` | yes | — | Base URL, e.g. `http://localhost:5000` or `https://postiz.example.com` |
-| `POSTIZ_API_KEY` | yes | — | API key from Postiz Settings → Public API |
+| `POSTIZ_URL` | yes | - | Base URL, e.g. `http://localhost:5000` or `https://postiz.example.com` |
+| `POSTIZ_API_KEY` | yes | - | API key from Postiz Settings → Public API |
 | `POSTIZ_ENABLE_WRITE` | no | `false` | Set `true` to expose create / update / upload / connect / generate-video tools |
 | `POSTIZ_ENABLE_DELETE` | no | `false` | Set `true` (in addition to write) to expose delete tools |
 | `POSTIZ_REQUEST_TIMEOUT_MS` | no | `30000` | HTTP timeout (ms) |
 | `POSTIZ_RATE_LIMIT_PER_HOUR` | no | `30` | Local guard ceiling. The server still trusts response headers when present. |
-| `POSTIZ_CF_ACCESS_CLIENT_ID` | no | — | Cloudflare Access service token client id (only needed if Postiz is behind CF Access) |
-| `POSTIZ_CF_ACCESS_CLIENT_SECRET` | no | — | Cloudflare Access service token secret |
+| `POSTIZ_CF_ACCESS_CLIENT_ID` | no | - | Cloudflare Access service token client id (only needed if Postiz is behind CF Access) |
+| `POSTIZ_CF_ACCESS_CLIENT_SECRET` | no | - | Cloudflare Access service token secret |
 
 ### Getting an API key
 

@@ -17,7 +17,7 @@ export function createGetMissingContentTool(getClient: () => PostizClient) {
     name: "postiz_get_missing_content",
     label: "postiz: get missing content",
     description:
-      "Fetch recent platform-side content for a post whose Postiz releaseId is marked missing. Pair with postiz_update_post_release_id to reattach.",
+      "Fetch recent platform-side content for a post whose Postiz releaseId is marked missing via GET /api/public/v1/posts/{id}/missing. Pair with postiz_update_post_release_id to reattach.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       const { postId } = raw as { postId: string };

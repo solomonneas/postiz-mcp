@@ -76,7 +76,7 @@ describe("postiz_get_provider_settings_schema tool", () => {
     expect(d.defaultSettings?.__type).toBe("x");
     expect(d.markdown).toBeDefined();
     expect(d.markdown!.length).toBeGreaterThan(0);
-    // No outbound HTTP — the schema bundle is local.
+    // No outbound HTTP - the schema bundle is local.
     expect(fake.calls).toHaveLength(0);
   });
 

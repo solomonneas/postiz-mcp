@@ -34,7 +34,7 @@ export default definePluginEntry({
     const config = resolveConfig(api.pluginConfig);
     const getClient = lazyClient(config);
 
-    // Reads — always available.
+    // Reads - always available.
     api.registerTool(createListIntegrationsTool(getClient) as AnyAgentTool);
     api.registerTool(createCheckIntegrationTool(getClient) as AnyAgentTool);
     api.registerTool(createFindNextSlotTool(getClient) as AnyAgentTool);
@@ -48,7 +48,7 @@ export default definePluginEntry({
       createGetProviderSettingsSchemaTool(getClient) as AnyAgentTool,
     );
 
-    // Writes — register only when enabled. Gates re-check at execute time
+    // Writes - register only when enabled. Gates re-check at execute time
     // so the registration pattern matches behavior even if config flips
     // between a registration sync and a tool call.
     if (config.enableWrite) {

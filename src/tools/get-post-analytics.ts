@@ -14,7 +14,7 @@ export function createGetPostAnalyticsTool(getClient: () => PostizClient) {
     name: "postiz_get_post_analytics",
     label: "postiz: post analytics",
     description:
-      "Get per-post engagement metrics (likes, comments, shares) via GET /api/analytics/post. Returns whatever the source platform exposes — different shape per provider.",
+      "Get per-post engagement metrics (likes, comments, shares) via GET /api/public/v1/analytics/post/{postId}. Returns whatever the source platform exposes; shape varies per provider.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       const { postId } = raw as { postId: string };

@@ -1,6 +1,6 @@
 {
   "name": "postiz-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Canonical Postiz client for any MCP-compatible client: full coverage of the Postiz public API (integrations, posts, uploads, analytics, video) with env-gated writes, confirm-required deletes, and a built-in 30/hr rate-limit guard. MCP server + first-class OpenClaw plugin.",
   "type": "module",
   "license": "MIT",

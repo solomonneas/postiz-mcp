@@ -7,9 +7,9 @@ import { jsonToolResult, withRate } from "./_util.ts";
 const Schema = Type.Object(
   {
     postId: Type.String({ description: "Post id to transition." }),
-    state: Type.Union([Type.Literal("DRAFT"), Type.Literal("QUEUE")], {
+    status: Type.Union([Type.Literal("draft"), Type.Literal("schedule")], {
       description:
-        "'DRAFT' moves a queued post back to draft (it stops being scheduled). 'QUEUE' moves a draft into the schedule.",
+        "'draft' moves a queued post back to draft (it stops being scheduled). 'schedule' moves a draft into the schedule. Postiz returns the resulting state as uppercase 'DRAFT' or 'QUEUE' in the response.",
     }),
   },
   { additionalProperties: false },
@@ -23,21 +23,21 @@ export function createUpdatePostStatusTool(
     name: "postiz_update_post_status",
     label: "postiz: update post status",
     description:
-      "Transition a Postiz post between DRAFT and QUEUE via PATCH /api/posts/{id}/status. Moving DRAFT→QUEUE re-enters the schedule using the post's existing publishDate. Requires enableWrite.",
+      "Transition a Postiz post between draft and schedule via PUT /api/public/v1/posts/{id}/status. Body shape is {status: 'draft'|'schedule'}; the server response carries state as 'DRAFT'|'QUEUE'. Moving draft -> schedule re-enters the schedule using the post's existing publishDate. Requires enableWrite.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireWriteGate(config, "postiz_update_post_status");
-      const { postId, state } = raw as {
+      const { postId, status } = raw as {
         postId: string;
-        state: "DRAFT" | "QUEUE";
+        status: "draft" | "schedule";
       };
       const client = getClient();
-      const res = await client.updatePostStatus(postId, { state });
+      const res = await client.updatePostStatus(postId, { status });
       return jsonToolResult(
         withRate(client, {
           ok: true,
           postId,
-          newState: state,
+          newStatus: status,
           response: res,
         }),
       );

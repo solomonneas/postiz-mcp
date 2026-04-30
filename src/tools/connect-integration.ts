@@ -8,12 +8,12 @@ const Schema = Type.Object(
   {
     provider: Type.String({
       description:
-        "Provider identifier as Postiz expects it (e.g. 'x', 'linkedin', 'bluesky', 'mastodon'). Match the value used as `providerIdentifier` in postiz_list_integrations.",
+        "Provider identifier as Postiz expects it (e.g. 'x', 'linkedin', 'bluesky'). Match the value used as `providerIdentifier` in postiz_list_integrations. Only OAuth-based providers are supported by Postiz's public API; URL-based providers like Mastodon return 400.",
     }),
     refresh: Type.Optional(
-      Type.Boolean({
+      Type.String({
         description:
-          "If true, ask Postiz to mint a refresh URL for an already-connected integration (re-auth). Default false (new connection).",
+          "Existing integration id to re-authorize (mints a refresh URL for that integration). Omit when connecting a brand-new channel.",
       }),
     ),
   },
@@ -28,18 +28,18 @@ export function createConnectIntegrationTool(
     name: "postiz_connect_integration",
     label: "postiz: connect integration",
     description:
-      "Generate the OAuth authorization URL for connecting a new social channel. Returns a `url` the user must open in a browser to finish the flow — Postiz redirects back to its own callback. This tool does NOT run a callback server. Requires enableWrite.",
+      "Generate the OAuth authorization URL for connecting a new social channel via GET /api/public/v1/social/{integration}. Returns a `url` the user must open in a browser to finish the flow; Postiz redirects back to its own callback. This tool does NOT run a callback server. Pass `refresh` set to an existing integration id to re-auth an already-connected channel. Requires enableWrite.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireWriteGate(config, "postiz_connect_integration");
       const { provider, refresh } = raw as {
         provider: string;
-        refresh?: boolean;
+        refresh?: string;
       };
       const client = getClient();
       const res = await client.connectIntegration({
         provider,
-        ...(refresh !== undefined ? { refresh } : {}),
+        ...(refresh ? { refresh } : {}),
       });
       return jsonToolResult(
         withRate(client, {
