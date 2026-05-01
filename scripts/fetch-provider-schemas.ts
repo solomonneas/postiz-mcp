@@ -13,8 +13,10 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const PROVIDERS: string[] = [
-  "bluesky",
+/** Providers Postiz has published a public-API doc for. These MUST fetch
+ *  successfully or the bundle refresh fails. Drift here means docs.postiz.com
+ *  changed something we depend on. */
+const DOCUMENTED_PROVIDERS: string[] = [
   "devto",
   "discord",
   "dribbble",
@@ -22,31 +24,43 @@ const PROVIDERS: string[] = [
   "gmb",
   "hashnode",
   "instagram",
-  "instagram-standalone",
   "kick",
   "lemmy",
   "linkedin",
-  "linkedin-page",
   "listmonk",
-  "mastodon",
   "medium",
   "moltbook",
-  "nostr",
   "pinterest",
   "reddit",
   "skool",
   "slack",
-  "telegram",
-  "threads",
   "tiktok",
   "twitch",
-  "vk",
   "warpcast",
   "whop",
   "wordpress",
   "x",
   "youtube",
 ];
+
+/** Real Postiz providers (source files exist in postiz-app) that have never
+ *  had a public-api doc. We fetch opportunistically: a 404 is expected and
+ *  ignored, but a 200 means upstream just published the doc - log loudly so
+ *  the next cron PR moves the slug into DOCUMENTED_PROVIDERS. */
+const UNDOCUMENTED_PROVIDERS: string[] = [
+  "bluesky",
+  "instagram-standalone",
+  "linkedin-page",
+  "mastodon",
+  "mastodon-custom",
+  "mewe",
+  "nostr",
+  "telegram",
+  "threads",
+  "vk",
+];
+
+const ALL_PROVIDERS = new Set([...DOCUMENTED_PROVIDERS, ...UNDOCUMENTED_PROVIDERS]);
 
 interface ProviderRecord {
   slug: string;
@@ -177,8 +191,10 @@ const MAX_NULL_SETTINGS_RATIO = 0.25;
 
 async function main(): Promise<void> {
   const records: ProviderRecord[] = [];
-  const errors: string[] = [];
-  for (const slug of PROVIDERS) {
+  const documentedFailures: string[] = [];
+  const newlyDocumented: string[] = [];
+
+  for (const slug of DOCUMENTED_PROVIDERS) {
     try {
       const r = await fetchProvider(slug);
       records.push(r);
@@ -186,21 +202,43 @@ async function main(): Promise<void> {
       console.log(`  ${slug.padEnd(20)} ${status}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      errors.push(`${slug}: ${msg}`);
+      documentedFailures.push(`${slug}: ${msg}`);
       console.error(`  ${slug.padEnd(20)} FAILED ${msg}`);
     }
   }
-  const successRatio = records.length / PROVIDERS.length;
+
+  for (const slug of UNDOCUMENTED_PROVIDERS) {
+    try {
+      const r = await fetchProvider(slug);
+      records.push(r);
+      newlyDocumented.push(slug);
+      const status = r.defaultSettings ? "ok" : "no-json-block";
+      console.log(`  ${slug.padEnd(20)} ${status} (newly documented)`);
+    } catch {
+      console.log(`  ${slug.padEnd(20)} skipped (no upstream doc, expected)`);
+    }
+  }
+
+  if (newlyDocumented.length > 0) {
+    console.log(
+      `\nNEW: ${newlyDocumented.length} previously-undocumented provider(s) now have docs: ` +
+        `${newlyDocumented.join(", ")}.\n` +
+        `Move them from UNDOCUMENTED_PROVIDERS to DOCUMENTED_PROVIDERS in scripts/fetch-provider-schemas.ts.`,
+    );
+  }
+
+  const documentedFetched = DOCUMENTED_PROVIDERS.length - documentedFailures.length;
+  const successRatio = documentedFetched / DOCUMENTED_PROVIDERS.length;
   if (successRatio < MIN_FETCH_SUCCESS_RATIO) {
     console.error(
-      `Only ${records.length}/${PROVIDERS.length} provider docs fetched ` +
+      `Only ${documentedFetched}/${DOCUMENTED_PROVIDERS.length} documented provider docs fetched ` +
         `(${(successRatio * 100).toFixed(1)}% < ${MIN_FETCH_SUCCESS_RATIO * 100}% floor). ` +
         `Refusing to overwrite the bundled schemas.`,
     );
     process.exit(1);
   }
   const nullCount = records.filter((r) => r.defaultSettings === null).length;
-  const nullRatio = nullCount / records.length;
+  const nullRatio = records.length === 0 ? 0 : nullCount / records.length;
   if (nullRatio > MAX_NULL_SETTINGS_RATIO) {
     console.error(
       `${nullCount}/${records.length} fetched providers had no parseable JSON block ` +
@@ -221,7 +259,7 @@ async function main(): Promise<void> {
     const existing = readExistingBundle(outPath);
     for (const prev of existing) {
       if (fetchedSlugs.has(prev.slug)) continue;
-      if (!PROVIDERS.includes(prev.slug)) continue;
+      if (!ALL_PROVIDERS.has(prev.slug)) continue;
       stalePreserved.push({
         ...prev,
         markdown: sanitizeMarkdown(prev.markdown),
@@ -232,7 +270,9 @@ async function main(): Promise<void> {
   writeFileSync(outPath, toModule(merged));
   console.log(
     `\nWrote ${merged.length} provider schema records to ${outPath}` +
-      (errors.length ? ` (${errors.length} failed, ${stalePreserved.length} preserved from prior bundle)` : ""),
+      (documentedFailures.length
+        ? ` (${documentedFailures.length} documented fetch(es) failed, ${stalePreserved.length} preserved from prior bundle)`
+        : ""),
   );
 }
 
