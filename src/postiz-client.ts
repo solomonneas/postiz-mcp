@@ -52,6 +52,7 @@ export interface PostizCreatePostInput {
     value: Array<{
       content: string;
       id?: string;
+      delay?: number;
       image?: Array<{ id?: string; path?: string }>;
     }>;
     settings?: Record<string, unknown>;
@@ -275,7 +276,7 @@ export class PostizClient {
   async invokeIntegrationTool(
     integrationId: string,
     methodName: string,
-    data: Record<string, string> = {},
+    data: Record<string, unknown> = {},
   ): Promise<unknown> {
     if (!isSafeId(integrationId)) {
       throw new Error(`Invalid integration id: ${integrationId}`);
