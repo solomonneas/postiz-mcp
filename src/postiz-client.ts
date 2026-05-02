@@ -233,6 +233,36 @@ export class PostizClient {
     );
   }
 
+  /** GET /api/public/v1/integration-settings/{id}
+   *  Returns the live runtime config for a connected integration: per-platform
+   *  rules description, the maxLength (already adjusted upstream for the
+   *  account's verified state), the DTO settings shape (or the literal string
+   *  "No additional settings required" if the provider has none), and the
+   *  list of platform-specific tools the account exposes.
+   *
+   *  We unwrap the upstream `{ output: {...} }` wrapper so callers see a flat
+   *  object. Note: `verified` is computed internally upstream and baked into
+   *  `maxLength`; it's not returned in the response. */
+  async getIntegrationSettings(integrationId: string): Promise<{
+    rules: string;
+    maxLength: number;
+    settings: Record<string, unknown> | string;
+    tools: unknown[];
+  }> {
+    if (!isSafeId(integrationId)) {
+      throw new Error(`Invalid integration id: ${integrationId}`);
+    }
+    const res = await this.request<{
+      output: {
+        rules: string;
+        maxLength: number;
+        settings: Record<string, unknown> | string;
+        tools: unknown[];
+      };
+    }>(`/api/public/v1/integration-settings/${integrationId}`);
+    return res.output;
+  }
+
   /** POST /api/public/v1/posts */
   async createPost(body: PostizCreatePostInput): Promise<Record<string, unknown>> {
     return this.request<Record<string, unknown>>("/api/public/v1/posts", {

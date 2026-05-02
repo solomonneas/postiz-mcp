@@ -290,3 +290,44 @@ describe("PostizClient - rate-limit tracking + guard", () => {
     expect(drift).toBeLessThan(5_000);
   });
 });
+
+describe("PostizClient - integration settings", () => {
+  let fake: ReturnType<typeof makeFakeFetch>;
+  afterEach(() => fake?.restore());
+
+  it("getIntegrationSettings hits /integration-settings/{id} with GET", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: {
+        output: {
+          rules: "Be kind.",
+          maxLength: 4000,
+          settings: { __type: "x", optionA: true },
+          tools: [{ name: "search-replies" }],
+        },
+      },
+    });
+    const client = makeTestClient();
+    const result = await client.getIntegrationSettings("abc-123");
+    expect(fake.calls[0].url).toBe(
+      `${TEST_BASE_URL}/api/public/v1/integration-settings/abc-123`,
+    );
+    expect(fake.calls[0].method).toBe("GET");
+    expect(result).toEqual({
+      rules: "Be kind.",
+      maxLength: 4000,
+      settings: { __type: "x", optionA: true },
+      tools: [{ name: "search-replies" }],
+    });
+  });
+
+  it("getIntegrationSettings rejects unsafe ids before sending", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient();
+    await expect(
+      client.getIntegrationSettings("../../../etc/passwd"),
+    ).rejects.toThrow(/Invalid integration id/);
+    expect(fake.calls).toHaveLength(0);
+  });
+});
