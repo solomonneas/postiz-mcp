@@ -260,6 +260,35 @@ export class PostizClient {
     return res.output;
   }
 
+  /** POST /api/public/v1/integration-trigger/{id}
+   *  Invoke a per-platform tool on a connected integration. The valid
+   *  `methodName` values for an integration come from
+   *  `getIntegrationSettings(id).tools`; each platform exposes a different
+   *  set (Reddit subreddit search, YouTube playlist lookup, etc.).
+   *
+   *  The response shape is platform-specific and intentionally untyped here.
+   *  Postiz forwards the platform's tool output verbatim.
+   *
+   *  Note: although some platform tools are pure-read (subreddit search,
+   *  playlist lookup), the wire is POST and the body is opaque, so the
+   *  tool layer treats this as a write for gating purposes. */
+  async invokeIntegrationTool(
+    integrationId: string,
+    methodName: string,
+    data: Record<string, string> = {},
+  ): Promise<unknown> {
+    if (!isSafeId(integrationId)) {
+      throw new Error(`Invalid integration id: ${integrationId}`);
+    }
+    return this.request<unknown>(
+      `/api/public/v1/integration-trigger/${integrationId}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ methodName, data }),
+      },
+    );
+  }
+
   /** POST /api/public/v1/posts */
   async createPost(body: PostizCreatePostInput): Promise<Record<string, unknown>> {
     return this.request<Record<string, unknown>>("/api/public/v1/posts", {
