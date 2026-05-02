@@ -159,7 +159,7 @@ export function createCreatePostTool(
     name: "postiz_create_post",
     label: "postiz: create post",
     description:
-      "Create, schedule, or immediately publish one or more posts via POST /api/public/v1/posts. PUBLIC SIDE EFFECT: with type='now' or a near-term schedule, this lands on real social accounts. Use postiz_get_provider_settings_schema first to construct valid `settings` blocks. Empty content and past schedule dates (more than 5 minutes old) are rejected before the request fires. Requires enableWrite.",
+      "Create, schedule, or immediately publish one or more posts via POST /api/public/v1/posts. PUBLIC SIDE EFFECT: with type='now' or a near-term schedule, this lands on real social accounts. Use postiz_get_provider_settings_schema first to construct valid `settings` blocks. Empty content and past schedule dates (more than 5 minutes old) are rejected before the request fires. Requires enableWrite. All media in posts[].value[].image[] MUST be paths returned by postiz_upload_file or postiz_upload_from_url. Raw filesystem paths and external URLs are rejected by most providers (TikTok, Instagram, YouTube, etc. require Postiz-verified URLs). Upload first, then pass the returned `path` value here.",
     parameters: Schema,
     execute: async (_id: string, raw: Record<string, unknown>) => {
       requireWriteGate(config, "postiz_create_post");
