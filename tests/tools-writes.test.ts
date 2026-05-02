@@ -6,6 +6,7 @@ import { createUpdatePostReleaseIdTool } from "../src/tools/update-post-release-
 import { createUploadFileTool } from "../src/tools/upload-file.ts";
 import { createUploadFromUrlTool } from "../src/tools/upload-from-url.ts";
 import { createGenerateVideoTool } from "../src/tools/generate-video.ts";
+import { createInvokeIntegrationToolTool } from "../src/tools/invoke-integration-tool.ts";
 import { TEST_BASE_URL, makeTestClient, makeTestConfig } from "./helpers.ts";
 import { makeFakeFetch } from "./helpers-fetch.ts";
 
@@ -271,5 +272,81 @@ describe("write tools - request shape + gate", () => {
       script: "hi there",
       voiceId: "alloy",
     });
+  });
+
+  it("postiz_invoke_integration_tool happy path POSTs and returns platform output with rateLimit", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: { results: [{ id: "abc", name: "rDevOps" }] },
+    });
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: true });
+    const tool = createInvokeIntegrationToolTool(() => client, config);
+    const res = await tool.execute("t", {
+      integrationId: "integration-uuid-1",
+      methodName: "searchSubreddit",
+      data: { query: "devops" },
+    });
+    expect(fake.calls[0].url).toBe(
+      `${TEST_BASE_URL}/api/public/v1/integration-trigger/integration-uuid-1`,
+    );
+    expect(fake.calls[0].method).toBe("POST");
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "searchSubreddit",
+      data: { query: "devops" },
+    });
+    expect(res.details).toMatchObject({
+      integrationId: "integration-uuid-1",
+      methodName: "searchSubreddit",
+      response: { results: [{ id: "abc", name: "rDevOps" }] },
+    });
+    expect((res.details as { rateLimit: unknown }).rateLimit).toBeDefined();
+  });
+
+  it("postiz_invoke_integration_tool defaults data to empty object when omitted", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { ok: true } });
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: true });
+    const tool = createInvokeIntegrationToolTool(() => client, config);
+    await tool.execute("t", {
+      integrationId: "integration-uuid-1",
+      methodName: "listPlaylists",
+    });
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "listPlaylists",
+      data: {},
+    });
+  });
+
+  it("postiz_invoke_integration_tool refuses when enableWrite is false", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: false });
+    const tool = createInvokeIntegrationToolTool(() => client, config);
+    await expect(
+      tool.execute("t", {
+        integrationId: "integration-uuid-1",
+        methodName: "searchSubreddit",
+        data: { query: "x" },
+      }),
+    ).rejects.toThrow(/enableWrite/i);
+    expect(fake.calls).toHaveLength(0);
+  });
+
+  it("postiz_invoke_integration_tool rejects unsafe integration ids before sending", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: true });
+    const tool = createInvokeIntegrationToolTool(() => client, config);
+    await expect(
+      tool.execute("t", {
+        integrationId: "../../../etc/passwd",
+        methodName: "anything",
+        data: {},
+      }),
+    ).rejects.toThrow(/Invalid integration id/);
+    expect(fake.calls).toHaveLength(0);
   });
 });
