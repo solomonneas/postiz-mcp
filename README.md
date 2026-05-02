@@ -22,6 +22,7 @@ If you self-host Postiz and want Claude / Codex / OpenClaw / Hermes / any MCP cl
 - `postiz_find_next_slot` - next free posting slot for a channel
 - `postiz_list_posts` - posts in a date window
 - `postiz_get_missing_content` - recover platform content for a Postiz post with a missing `releaseId`
+- `postiz_get_integration_settings` - live runtime config for ONE connected integration: rules, maxLength (verified-aware), settings DTO, available platform-specific tools. Use before postiz_create_post when content length matters.
 - `postiz_list_notifications` - Postiz UI notifications
 - `postiz_get_platform_analytics` - followers / impressions / engagement
 - `postiz_get_post_analytics` - likes / comments / shares
