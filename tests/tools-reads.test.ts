@@ -268,3 +268,46 @@ describe("read tools - request shape + result", () => {
     expect(fake.calls).toHaveLength(0);
   });
 });
+
+describe("entry-point registration parity", () => {
+  /** Returns true iff `name` appears as a whole identifier in `source`. */
+  function containsIdentifier(source: string, name: string): boolean {
+    return new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(source);
+  }
+
+  it("every read-tool factory imported in mcp-server.ts is also imported in index.ts", async () => {
+    const fs = await import("node:fs/promises");
+    const path = await import("node:path");
+    const root = path.resolve(import.meta.dirname, "..");
+
+    const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
+    const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
+
+    // Every `createXTool` import in mcp-server.ts that comes from src/tools/
+    // must also be imported in index.ts. (We restrict to src/tools/ to avoid
+    // false positives on shared helpers.)
+    const importRe =
+      /import\s*\{\s*(create[A-Za-z]+Tool)\s*\}\s*from\s*"\.\/src\/tools\/[^"]+";?/g;
+    const mcpFactories = [...mcp.matchAll(importRe)].map((m) => m[1]);
+    expect(mcpFactories.length).toBeGreaterThan(0); // sanity
+
+    for (const factory of mcpFactories) {
+      expect(
+        containsIdentifier(idx, factory),
+        `factory ${factory} is registered in mcp-server.ts but missing from index.ts`,
+      ).toBe(true);
+    }
+  });
+
+  it("postiz_get_integration_settings is registered in mcp-server.ts and index.ts", async () => {
+    const fs = await import("node:fs/promises");
+    const path = await import("node:path");
+    const root = path.resolve(import.meta.dirname, "..");
+
+    const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
+    const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
+
+    expect(containsIdentifier(mcp, "createGetIntegrationSettingsTool")).toBe(true);
+    expect(containsIdentifier(idx, "createGetIntegrationSettingsTool")).toBe(true);
+  });
+});
