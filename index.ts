@@ -10,6 +10,7 @@ import { createDeleteIntegrationTool } from "./src/tools/delete-integration.ts";
 import { createCreatePostTool } from "./src/tools/create-post.ts";
 import { createListPostsTool } from "./src/tools/list-posts.ts";
 import { createGetMissingContentTool } from "./src/tools/get-missing-content.ts";
+import { createGetIntegrationSettingsTool } from "./src/tools/get-integration-settings.ts";
 import { createUpdatePostReleaseIdTool } from "./src/tools/update-post-release-id.ts";
 import { createUpdatePostStatusTool } from "./src/tools/update-post-status.ts";
 import { createDeletePostTool } from "./src/tools/delete-post.ts";
@@ -40,6 +41,9 @@ export default definePluginEntry({
     api.registerTool(createFindNextSlotTool(getClient) as AnyAgentTool);
     api.registerTool(createListPostsTool(getClient) as AnyAgentTool);
     api.registerTool(createGetMissingContentTool(getClient) as AnyAgentTool);
+    api.registerTool(
+      createGetIntegrationSettingsTool(getClient) as AnyAgentTool,
+    );
     api.registerTool(createListNotificationsTool(getClient) as AnyAgentTool);
     api.registerTool(createGetPlatformAnalyticsTool(getClient) as AnyAgentTool);
     api.registerTool(createGetPostAnalyticsTool(getClient) as AnyAgentTool);

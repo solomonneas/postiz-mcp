@@ -15,6 +15,7 @@ import { createDeleteIntegrationTool } from "./src/tools/delete-integration.ts";
 import { createCreatePostTool } from "./src/tools/create-post.ts";
 import { createListPostsTool } from "./src/tools/list-posts.ts";
 import { createGetMissingContentTool } from "./src/tools/get-missing-content.ts";
+import { createGetIntegrationSettingsTool } from "./src/tools/get-integration-settings.ts";
 import { createUpdatePostReleaseIdTool } from "./src/tools/update-post-release-id.ts";
 import { createUpdatePostStatusTool } from "./src/tools/update-post-status.ts";
 import { createDeletePostTool } from "./src/tools/delete-post.ts";
@@ -150,6 +151,11 @@ async function main(): Promise<void> {
   });
   bind(server, createGetMissingContentTool(getClient), {
     postId: z.string().describe("Post id whose releaseId is marked missing."),
+  });
+  bind(server, createGetIntegrationSettingsTool(getClient), {
+    integrationId: z
+      .string()
+      .describe("Integration id from postiz_list_integrations."),
   });
   bind(server, createListNotificationsTool(getClient), {
     page: z.number().int().min(1).max(100).optional().describe("Page (default 1)."),
