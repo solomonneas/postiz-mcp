@@ -8,6 +8,17 @@ Ships as a stdio MCP server **and** a first-class OpenClaw native plugin from th
 
 If you self-host Postiz and want Claude / Codex / OpenClaw / Hermes / any MCP client to interact with it, this gives you a typed, tested, single-purpose tool surface instead of hand-rolled HTTP calls in every workflow.
 
+## See also
+
+[`gitroomhq/postiz-agent`](https://github.com/gitroomhq/postiz-agent) is the official Postiz CLI from Nevo David. It's the right pick if you're a **Postiz Cloud subscriber** wanting OAuth-flow auth, or if you only need a Bash-callable surface in Claude Code.
+
+This package (`postiz-mcp`) is the right pick if you:
+- Self-host Postiz and want to skip running an OAuth broker
+- Use an MCP-native client (Claude Desktop, OpenClaw, Hermes, Codex CLI) and want **typed tool schemas** instead of bash-shelling
+- Want **defense-in-depth gating** (writes off by default, deletes require `enableDelete` + `confirm: true`)
+- Want a **local rate-limit guard** that refuses to send when your hourly budget is exhausted
+- Need **Cloudflare Access** service-token support
+
 ## Warnings before you wire this up
 
 - **Postiz writes are public side effects.** A successful `postiz_create_post` with `type: "now"` (or a near-term schedule) lands on real social accounts. Once published, posts can be deleted from Postiz but **the platform-side post stays live** - Postiz cannot recall it.
@@ -225,6 +236,38 @@ The MCP server forwards them as `CF-Access-Client-Id` / `CF-Access-Client-Secret
 - *"What's the next available LinkedIn slot? Schedule this 4-tweet thread for that time on X with replies set to verified-only."*
 - *"What posted last week and how did the X post on Tuesday do?"*
 - *"Show me the X provider settings schema so I can construct a thread payload."*
+
+### Thread mode (multi-post threads with per-post media + delay)
+
+`postiz_create_post`'s `posts[].value[]` array is a sequence - every entry posts to the same integration in order, with optional per-entry `image[]` and `delay` (minutes between posts). Use this for X threads, LinkedIn carousel-style follow-ups, etc.
+
+```json
+{
+  "type": "schedule",
+  "date": "2026-05-15T09:00:00.000Z",
+  "posts": [
+    {
+      "integrationId": "integration-uuid-here",
+      "value": [
+        {
+          "content": "Launching our new feature today.",
+          "image": [{ "id": "abc", "path": "<path returned by postiz_upload_file>" }]
+        },
+        {
+          "content": "Here's what's new under the hood:",
+          "delay": 5
+        },
+        {
+          "content": "Try it and let us know what breaks.",
+          "delay": 5
+        }
+      ]
+    }
+  ]
+}
+```
+
+Each `value[]` after the first uses `delay` (minutes) to space posts out. `image[]` is optional per entry and uses paths returned by `postiz_upload_file` / `postiz_upload_from_url` - raw filesystem paths and external URLs are rejected.
 
 ## Provider settings schemas
 
