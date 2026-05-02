@@ -2,6 +2,9 @@
   "id": "postiz",
   "name": "Postiz",
   "description": "Full-coverage Postiz client for OpenClaw agents: integrations, posts (create / list / update / delete), uploads, analytics, and video. Env-gated writes, confirm-required deletes, built-in 30/hr rate-limit guard, bundled per-provider settings schemas.",
+  "activation": {
+    "onStartup": false
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
