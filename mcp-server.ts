@@ -29,7 +29,7 @@ import { createListVoicesTool } from "./src/tools/list-voices.ts";
 import { createGenerateVideoTool } from "./src/tools/generate-video.ts";
 import { createGetProviderSettingsSchemaTool } from "./src/tools/get-provider-settings-schema.ts";
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 
 function readConfigFromEnv(): PostizPluginConfig {
   const baseUrl = (process.env.POSTIZ_URL ?? "").trim();
