@@ -3,6 +3,7 @@ import { createListIntegrationsTool } from "../src/tools/list-integrations.ts";
 import { createCheckIntegrationTool } from "../src/tools/check-integration.ts";
 import { createFindNextSlotTool } from "../src/tools/find-next-slot.ts";
 import { createListPostsTool } from "../src/tools/list-posts.ts";
+import { createGetIntegrationSettingsTool } from "../src/tools/get-integration-settings.ts";
 import { createGetMissingContentTool } from "../src/tools/get-missing-content.ts";
 import { createListNotificationsTool } from "../src/tools/list-notifications.ts";
 import { createGetPlatformAnalyticsTool } from "../src/tools/get-platform-analytics.ts";
@@ -175,5 +176,95 @@ describe("read tools - request shape + result", () => {
       functionName: "loadVoices",
       identifier: "image-text-slides",
     });
+  });
+
+  it("postiz_get_integration_settings happy path returns flat shape with rateLimit", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: {
+        output: {
+          rules: "X rules: be kind.",
+          maxLength: 4000,
+          settings: { __type: "x", optionA: true },
+          tools: [{ name: "search-replies" }],
+        },
+      },
+    });
+    const client = makeTestClient();
+    const tool = createGetIntegrationSettingsTool(() => client);
+    const res = await tool.execute("t", { integrationId: "abc-123" });
+    expect(fake.calls[0].url).toBe(
+      `${TEST_BASE_URL}/api/public/v1/integration-settings/abc-123`,
+    );
+    expect(fake.calls[0].method).toBe("GET");
+    expect(res.details).toMatchObject({
+      integrationId: "abc-123",
+      rules: "X rules: be kind.",
+      maxLength: 4000,
+      settings: { __type: "x", optionA: true },
+      tools: [{ name: "search-replies" }],
+    });
+    expect((res.details as { rateLimit: unknown }).rateLimit).toBeDefined();
+  });
+
+  it("postiz_get_integration_settings propagates non-2xx as PostizApiError", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 500, body: { message: "Cannot read properties of null" } });
+    const client = makeTestClient();
+    const tool = createGetIntegrationSettingsTool(() => client);
+    await expect(
+      tool.execute("t", { integrationId: "missing-uuid" }),
+    ).rejects.toThrow(/postiz 500/);
+  });
+
+  it("postiz_get_integration_settings passes through empty unknown-provider fallback", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: { output: { rules: "", maxLength: 0, settings: {}, tools: [] } },
+    });
+    const client = makeTestClient();
+    const tool = createGetIntegrationSettingsTool(() => client);
+    const res = await tool.execute("t", { integrationId: "weird-provider-id" });
+    expect(res.details).toMatchObject({
+      integrationId: "weird-provider-id",
+      rules: "",
+      maxLength: 0,
+      settings: {},
+      tools: [],
+    });
+    expect((res.details as { rateLimit: unknown }).rateLimit).toBeDefined();
+  });
+
+  it("postiz_get_integration_settings preserves the 'no additional settings required' string", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: {
+        output: {
+          rules: "Plain text only.",
+          maxLength: 280,
+          settings: "No additional settings required",
+          tools: [],
+        },
+      },
+    });
+    const client = makeTestClient();
+    const tool = createGetIntegrationSettingsTool(() => client);
+    const res = await tool.execute("t", { integrationId: "plain-1" });
+    expect((res.details as { settings: unknown }).settings).toBe(
+      "No additional settings required",
+    );
+  });
+
+  it("postiz_get_integration_settings rejects unsafe ids before sending", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient();
+    const tool = createGetIntegrationSettingsTool(() => client);
+    await expect(
+      tool.execute("t", { integrationId: "../../../etc/passwd" }),
+    ).rejects.toThrow(/Invalid integration id/);
+    expect(fake.calls).toHaveLength(0);
   });
 });

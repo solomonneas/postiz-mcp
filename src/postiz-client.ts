@@ -69,6 +69,13 @@ export interface PostizUploadResponse {
   [key: string]: unknown;
 }
 
+export interface PostizIntegrationSettings {
+  rules: string;
+  maxLength: number;
+  settings: Record<string, unknown> | string;
+  tools: unknown[];
+}
+
 export class PostizApiError extends Error {
   constructor(
     public readonly status: number,
@@ -243,23 +250,13 @@ export class PostizClient {
    *  We unwrap the upstream `{ output: {...} }` wrapper so callers see a flat
    *  object. Note: `verified` is computed internally upstream and baked into
    *  `maxLength`; it's not returned in the response. */
-  async getIntegrationSettings(integrationId: string): Promise<{
-    rules: string;
-    maxLength: number;
-    settings: Record<string, unknown> | string;
-    tools: unknown[];
-  }> {
+  async getIntegrationSettings(integrationId: string): Promise<PostizIntegrationSettings> {
     if (!isSafeId(integrationId)) {
       throw new Error(`Invalid integration id: ${integrationId}`);
     }
-    const res = await this.request<{
-      output: {
-        rules: string;
-        maxLength: number;
-        settings: Record<string, unknown> | string;
-        tools: unknown[];
-      };
-    }>(`/api/public/v1/integration-settings/${integrationId}`);
+    const res = await this.request<{ output: PostizIntegrationSettings }>(
+      `/api/public/v1/integration-settings/${integrationId}`,
+    );
     return res.output;
   }
 
