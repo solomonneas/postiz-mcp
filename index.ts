@@ -7,6 +7,7 @@ import { createCheckIntegrationTool } from "./src/tools/check-integration.ts";
 import { createFindNextSlotTool } from "./src/tools/find-next-slot.ts";
 import { createConnectIntegrationTool } from "./src/tools/connect-integration.ts";
 import { createDeleteIntegrationTool } from "./src/tools/delete-integration.ts";
+import { createInvokeIntegrationToolTool } from "./src/tools/invoke-integration-tool.ts";
 import { createCreatePostTool } from "./src/tools/create-post.ts";
 import { createListPostsTool } from "./src/tools/list-posts.ts";
 import { createGetMissingContentTool } from "./src/tools/get-missing-content.ts";
@@ -58,6 +59,9 @@ export default definePluginEntry({
     if (config.enableWrite) {
       api.registerTool(
         createConnectIntegrationTool(getClient, config) as AnyAgentTool,
+      );
+      api.registerTool(
+        createInvokeIntegrationToolTool(getClient, config) as AnyAgentTool,
       );
       api.registerTool(createCreatePostTool(getClient, config) as AnyAgentTool);
       api.registerTool(

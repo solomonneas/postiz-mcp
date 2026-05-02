@@ -12,6 +12,7 @@ import { createCheckIntegrationTool } from "./src/tools/check-integration.ts";
 import { createFindNextSlotTool } from "./src/tools/find-next-slot.ts";
 import { createConnectIntegrationTool } from "./src/tools/connect-integration.ts";
 import { createDeleteIntegrationTool } from "./src/tools/delete-integration.ts";
+import { createInvokeIntegrationToolTool } from "./src/tools/invoke-integration-tool.ts";
 import { createCreatePostTool } from "./src/tools/create-post.ts";
 import { createListPostsTool } from "./src/tools/list-posts.ts";
 import { createGetMissingContentTool } from "./src/tools/get-missing-content.ts";
@@ -29,7 +30,7 @@ import { createListVoicesTool } from "./src/tools/list-voices.ts";
 import { createGenerateVideoTool } from "./src/tools/generate-video.ts";
 import { createGetProviderSettingsSchemaTool } from "./src/tools/get-provider-settings-schema.ts";
 
-const VERSION = "0.1.2";
+const VERSION = "0.2.0";
 
 function readConfigFromEnv(): PostizPluginConfig {
   const baseUrl = (process.env.POSTIZ_URL ?? "").trim();
@@ -187,6 +188,22 @@ async function main(): Promise<void> {
       .string()
       .optional()
       .describe("Existing integration id to re-auth. Omit for a brand-new connection."),
+  });
+  bind(server, createInvokeIntegrationToolTool(getClient, config), {
+    integrationId: z
+      .string()
+      .describe("Integration id from postiz_list_integrations."),
+    methodName: z
+      .string()
+      .describe(
+        "Platform-specific tool method name. Discover via postiz_get_integration_settings(integrationId).tools.",
+      ),
+    data: z
+      .record(z.string(), z.string())
+      .optional()
+      .describe(
+        "Method-specific arguments. Shape varies by platform/methodName. Defaults to empty.",
+      ),
   });
   bind(server, createCreatePostTool(getClient, config), {
     type: z.enum(["draft", "schedule", "now"]).describe(

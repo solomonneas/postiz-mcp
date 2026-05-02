@@ -43,6 +43,7 @@ This package (`postiz-mcp`) is the right pick if you:
 ### Writes (require `POSTIZ_ENABLE_WRITE=true`)
 - `postiz_create_post` - schedule / publish-now / draft
 - `postiz_connect_integration` - generate OAuth URL for a new channel
+- `postiz_invoke_integration_tool` - call a per-platform tool method on an integration (e.g. Reddit subreddit search, YouTube playlist lookup) via POST /api/public/v1/integration-trigger/{id}. Discover valid `methodName` values via `postiz_get_integration_settings(id).tools` first.
 - `postiz_update_post_status` - toggle DRAFT ↔ QUEUE
 - `postiz_update_post_release_id` - reattach a Postiz post to its platform-side release
 - `postiz_upload_file` - multipart upload from local file or base64
