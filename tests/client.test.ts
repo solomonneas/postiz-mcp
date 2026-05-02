@@ -331,3 +331,55 @@ describe("PostizClient - integration settings", () => {
     expect(fake.calls).toHaveLength(0);
   });
 });
+
+describe("PostizClient - invoke integration tool", () => {
+  let fake: ReturnType<typeof makeFakeFetch>;
+  afterEach(() => fake?.restore());
+
+  it("invokeIntegrationTool POSTs /integration-trigger/{id} with methodName + data body", async () => {
+    fake = makeFakeFetch();
+    fake.queue({
+      status: 200,
+      body: { results: [{ id: "abc", name: "rDevOps" }] },
+    });
+    const client = makeTestClient();
+    const result = await client.invokeIntegrationTool(
+      "integration-uuid-1",
+      "searchSubreddit",
+      { query: "devops" },
+    );
+    expect(fake.calls[0].url).toBe(
+      `${TEST_BASE_URL}/api/public/v1/integration-trigger/integration-uuid-1`,
+    );
+    expect(fake.calls[0].method).toBe("POST");
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "searchSubreddit",
+      data: { query: "devops" },
+    });
+    expect(result).toEqual({ results: [{ id: "abc", name: "rDevOps" }] });
+  });
+
+  it("invokeIntegrationTool sends an empty data object when none is provided", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { ok: true } });
+    const client = makeTestClient();
+    await client.invokeIntegrationTool("integration-uuid-1", "listPlaylists");
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "listPlaylists",
+      data: {},
+    });
+  });
+
+  it("invokeIntegrationTool rejects unsafe integration ids before sending", async () => {
+    fake = makeFakeFetch();
+    const client = makeTestClient();
+    await expect(
+      client.invokeIntegrationTool(
+        "../../../etc/passwd",
+        "anything",
+        { x: "y" },
+      ),
+    ).rejects.toThrow(/Invalid integration id/);
+    expect(fake.calls).toHaveLength(0);
+  });
+});
