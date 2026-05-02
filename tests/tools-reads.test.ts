@@ -275,7 +275,7 @@ describe("entry-point registration parity", () => {
     return new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(source);
   }
 
-  /** Returns true iff `factory` is INVOKED somewhere in `source` — i.e. the
+  /** Returns true iff `factory` is INVOKED somewhere in `source`, i.e. the
    *  pattern `factory(` appears with no identifier-character on the left.
    *  This catches the actual failure mode (imported but not registered). */
   function isInvoked(source: string, factory: string): boolean {
@@ -328,7 +328,7 @@ describe("entry-point registration parity", () => {
     const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
     const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
 
-    // Both files must IMPORT and INVOKE the factory — not just mention it.
+    // Both files must IMPORT and INVOKE the factory, not just mention it.
     expect(containsIdentifier(mcp, "createGetIntegrationSettingsTool")).toBe(true);
     expect(isInvoked(mcp, "createGetIntegrationSettingsTool")).toBe(true);
     expect(containsIdentifier(idx, "createGetIntegrationSettingsTool")).toBe(true);
