@@ -275,7 +275,14 @@ describe("entry-point registration parity", () => {
     return new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(source);
   }
 
-  it("every read-tool factory imported in mcp-server.ts is also imported in index.ts", async () => {
+  /** Returns true iff `factory` is INVOKED somewhere in `source` — i.e. the
+   *  pattern `factory(` appears with no identifier-character on the left.
+   *  This catches the actual failure mode (imported but not registered). */
+  function isInvoked(source: string, factory: string): boolean {
+    return new RegExp(`(?<![A-Za-z0-9_])${factory}\\s*\\(`).test(source);
+  }
+
+  it("every read-tool factory imported in mcp-server.ts is also imported AND invoked in index.ts", async () => {
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
     const root = path.resolve(import.meta.dirname, "..");
@@ -284,17 +291,31 @@ describe("entry-point registration parity", () => {
     const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
 
     // Every `createXTool` import in mcp-server.ts that comes from src/tools/
-    // must also be imported in index.ts. (We restrict to src/tools/ to avoid
-    // false positives on shared helpers.)
+    // must also be imported AND invoked in index.ts. (We restrict to
+    // src/tools/ to avoid false positives on shared helpers.)
     const importRe =
       /import\s*\{\s*(create[A-Za-z]+Tool)\s*\}\s*from\s*"\.\/src\/tools\/[^"]+";?/g;
     const mcpFactories = [...mcp.matchAll(importRe)].map((m) => m[1]);
     expect(mcpFactories.length).toBeGreaterThan(0); // sanity
 
     for (const factory of mcpFactories) {
+      // 1. Must be invoked in mcp-server.ts (not just imported there).
+      expect(
+        isInvoked(mcp, factory),
+        `factory ${factory} is imported in mcp-server.ts but never invoked there`,
+      ).toBe(true);
+
+      // 2. Must be imported as an identifier in index.ts.
       expect(
         containsIdentifier(idx, factory),
-        `factory ${factory} is registered in mcp-server.ts but missing from index.ts`,
+        `factory ${factory} is imported in mcp-server.ts but missing from index.ts`,
+      ).toBe(true);
+
+      // 3. Must be invoked in index.ts (catches dead imports / commented-out
+      //    registrations).
+      expect(
+        isInvoked(idx, factory),
+        `factory ${factory} is imported in index.ts but never invoked (registration drift)`,
       ).toBe(true);
     }
   });
@@ -307,7 +328,10 @@ describe("entry-point registration parity", () => {
     const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
     const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
 
+    // Both files must IMPORT and INVOKE the factory — not just mention it.
     expect(containsIdentifier(mcp, "createGetIntegrationSettingsTool")).toBe(true);
+    expect(isInvoked(mcp, "createGetIntegrationSettingsTool")).toBe(true);
     expect(containsIdentifier(idx, "createGetIntegrationSettingsTool")).toBe(true);
+    expect(isInvoked(idx, "createGetIntegrationSettingsTool")).toBe(true);
   });
 });
