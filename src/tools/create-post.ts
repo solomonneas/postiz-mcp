@@ -85,6 +85,13 @@ const Schema = Type.Object(
                   description:
                     "Post body. For threads (X, Bluesky), append more value entries - each entry is one post in the thread.",
                 }),
+                delay: Type.Optional(
+                  Type.Number({
+                    minimum: 0,
+                    description:
+                      "Minutes to wait after the previous post in this value[] sequence before publishing this one. Used for thread-mode pacing (X threads, LinkedIn carousel-style follow-ups, etc.).",
+                  }),
+                ),
                 image: Type.Optional(
                   Type.Array(
                     Type.Object(

@@ -199,7 +199,7 @@ async function main(): Promise<void> {
         "Platform-specific tool method name. Discover via postiz_get_integration_settings(integrationId).tools.",
       ),
     data: z
-      .record(z.string(), z.string())
+      .record(z.string(), z.unknown())
       .optional()
       .describe(
         "Method-specific arguments. Shape varies by platform/methodName. Defaults to empty.",
@@ -216,6 +216,9 @@ async function main(): Promise<void> {
         value: z.array(
           z.object({
             content: z.string(),
+            delay: z.number().int().min(0).optional().describe(
+              "Minutes to wait after the previous post in the value[] sequence before publishing this one.",
+            ),
             image: z
               .array(
                 z.object({

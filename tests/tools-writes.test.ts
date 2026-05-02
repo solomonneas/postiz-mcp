@@ -349,4 +349,59 @@ describe("write tools - request shape + gate", () => {
     ).rejects.toThrow(/Invalid integration id/);
     expect(fake.calls).toHaveLength(0);
   });
+
+  it("postiz_invoke_integration_tool forwards nested non-string data verbatim", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { ok: true } });
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: true });
+    const tool = createInvokeIntegrationToolTool(() => client, config);
+    await tool.execute("t", {
+      integrationId: "integration-uuid-1",
+      methodName: "complexCall",
+      data: {
+        flair: { id: "abc", text: "Discussion" },
+        tags: ["devops", "kubernetes"],
+        enabled: true,
+        count: 42,
+      },
+    });
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "complexCall",
+      data: {
+        flair: { id: "abc", text: "Discussion" },
+        tags: ["devops", "kubernetes"],
+        enabled: true,
+        count: 42,
+      },
+    });
+  });
+
+  it("postiz_create_post forwards value[].delay through to the body", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { id: "post-1" } });
+    const client = makeTestClient();
+    const config = makeTestConfig({ enableWrite: true });
+    const tool = createCreatePostTool(() => client, config);
+    await tool.execute("t", {
+      type: "schedule",
+      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      posts: [
+        {
+          integrationId: "integration-uuid-1",
+          value: [
+            { content: "thread post 1" },
+            { content: "thread post 2", delay: 5 },
+            { content: "thread post 3", delay: 10 },
+          ],
+        },
+      ],
+    });
+    const body = JSON.parse(fake.calls[0].body!);
+    expect(body.posts[0].value).toEqual([
+      { content: "thread post 1" },
+      { content: "thread post 2", delay: 5 },
+      { content: "thread post 3", delay: 10 },
+    ]);
+  });
 });

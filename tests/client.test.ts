@@ -382,4 +382,25 @@ describe("PostizClient - invoke integration tool", () => {
     ).rejects.toThrow(/Invalid integration id/);
     expect(fake.calls).toHaveLength(0);
   });
+
+  it("invokeIntegrationTool forwards nested non-string data verbatim", async () => {
+    fake = makeFakeFetch();
+    fake.queue({ status: 200, body: { ok: true } });
+    const client = makeTestClient();
+    await client.invokeIntegrationTool("integration-uuid-1", "complexCall", {
+      flair: { id: "abc", text: "Discussion" },
+      tags: ["devops", "kubernetes"],
+      enabled: true,
+      count: 42,
+    });
+    expect(JSON.parse(fake.calls[0].body!)).toEqual({
+      methodName: "complexCall",
+      data: {
+        flair: { id: "abc", text: "Discussion" },
+        tags: ["devops", "kubernetes"],
+        enabled: true,
+        count: 42,
+      },
+    });
+  });
 });
