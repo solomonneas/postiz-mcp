@@ -2,7 +2,7 @@
 // Run `npm run refresh-schemas` to update.
 //
 // Source: https://docs.postiz.com/public-api/providers/{slug}.md
-// Generated: 2026-04-30T01:37:49.014Z
+// Generated: 2026-05-02T00:31:53.394Z
 
 export interface ProviderSchema {
   /** URL slug used by docs.postiz.com (e.g. "x", "gmb"). */
@@ -25,10 +25,20 @@ export interface ProviderSchema {
 
 export const PROVIDER_SCHEMAS: ProviderSchema[] = [
   {
+    "slug": "bluesky",
+    "type": "bluesky",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/bluesky.md",
+    "fetchedAt": "2026-05-02T00:31:46.634Z",
+    "defaultSettings": {
+      "__type": "bluesky"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Bluesky Settings\n\n> API settings for posting to Bluesky\n\n## Settings Schema\n\nWhen creating a post for Bluesky, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"bluesky\"\n  }\n}\n```\n\n<Note>\n  Bluesky has no provider-specific settings beyond `__type`. Post content,\n  images, and the schedule are configured at the post level - see the\n  [Create Post](/public-api/posts/create) reference.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description       |\n| -------- | -------- | -------- | ----------------- |\n| `__type` | `string` | Yes      | Must be `bluesky` |\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-bluesky-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API! 🦋\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"bluesky\"\n      }\n    }\n  ]\n}\n```\n\n### Thread Post\n\nCreate a thread by adding multiple items to the `value` array. Each entry\nbecomes a reply chained to the previous one:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-bluesky-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"1/ Starting a thread on Bluesky from the API\",\n          \"image\": []\n        },\n        {\n          \"content\": \"2/ Each value entry becomes a reply in the thread\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"bluesky\"\n      }\n    }\n  ]\n}\n```\n\n### Post with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-bluesky-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing today's launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"bluesky\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
     "slug": "devto",
     "type": "devto",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/devto.md",
-    "fetchedAt": "2026-04-30T01:37:42.292Z",
+    "fetchedAt": "2026-05-02T00:31:46.832Z",
     "defaultSettings": {
       "__type": "devto",
       "title": "Article Title",
@@ -51,7 +61,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "discord",
     "type": "discord",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/discord.md",
-    "fetchedAt": "2026-04-30T01:37:42.459Z",
+    "fetchedAt": "2026-05-02T00:31:47.041Z",
     "defaultSettings": {
       "__type": "discord",
       "channel": "channel-id"
@@ -62,7 +72,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "dribbble",
     "type": "dribbble",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/dribbble.md",
-    "fetchedAt": "2026-04-30T01:37:42.638Z",
+    "fetchedAt": "2026-05-02T00:31:47.223Z",
     "defaultSettings": {
       "__type": "dribbble",
       "title": "My Shot Title",
@@ -74,7 +84,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "facebook",
     "type": "facebook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/facebook.md",
-    "fetchedAt": "2026-04-30T01:37:42.817Z",
+    "fetchedAt": "2026-05-02T00:31:47.393Z",
     "defaultSettings": {
       "__type": "facebook",
       "url": "https://example.com/my-article"
@@ -85,7 +95,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "gmb",
     "type": "gmb",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/gmb.md",
-    "fetchedAt": "2026-04-30T01:37:43.017Z",
+    "fetchedAt": "2026-05-02T00:31:47.635Z",
     "defaultSettings": {
       "__type": "gmb",
       "topicType": "STANDARD",
@@ -98,7 +108,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "hashnode",
     "type": "hashnode",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/hashnode.md",
-    "fetchedAt": "2026-04-30T01:37:43.442Z",
+    "fetchedAt": "2026-05-02T00:31:47.877Z",
     "defaultSettings": {
       "__type": "hashnode",
       "title": "Article Title",
@@ -122,7 +132,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "instagram",
     "type": "instagram",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram.md",
-    "fetchedAt": "2026-04-30T01:37:43.618Z",
+    "fetchedAt": "2026-05-02T00:31:48.053Z",
     "defaultSettings": {
       "__type": "instagram",
       "post_type": "post",
@@ -132,10 +142,23 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Settings\n\n> API settings for posting to Instagram\n\n## Settings Schema\n\nWhen creating a post for Instagram, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": []\n  }\n}\n```\n\n<Note>\n  Use `__type: \"instagram\"` for Facebook Business-linked accounts and `__type: \"instagram-standalone\"` for standalone Instagram accounts. Both use the same settings schema.\n</Note>\n\n## Fields\n\n| Field                 | Type      | Required | Description                           |\n| --------------------- | --------- | -------- | ------------------------------------- |\n| `__type`              | `string`  | Yes      | `instagram` or `instagram-standalone` |\n| `post_type`           | `string`  | Yes      | Type of Instagram post                |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel       |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels   |\n| `collaborators`       | `array`   | No       | List of collaborator usernames        |\n\n### `post_type`\n\n| Value   | Description                          |\n| ------- | ------------------------------------ |\n| `post`  | Regular feed post                    |\n| `story` | Instagram Story (24-hour visibility) |\n\n### `is_trial_reel`\n\nWhen set to `true`, the post will be published as a trial reel with limited initial visibility.\n\n### `graduation_strategy`\n\nControls how trial reels graduate to full visibility. Only applicable when `is_trial_reel` is `true`.\n\n| Value            | Description                                 |\n| ---------------- | ------------------------------------------- |\n| `MANUAL`         | Manually graduate the reel                  |\n| `SS_PERFORMANCE` | Automatically graduate based on performance |\n\n### `collaborators`\n\nArray of collaborator objects. Each collaborator will receive an invite to be added as a collaborator on the post.\n\n```json theme={null}\n{\n  \"collaborators\": [\n    { \"label\": \"username1\" },\n    { \"label\": \"username2\" }\n  ]\n}\n```\n\n***\n\n## Complete Example\n\n### Feed Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Beautiful sunset today! 🌅\\n\\n#sunset #photography #nature\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/sunset.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\n### Story Post\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"\",\n          \"image\": [\n            {\n              \"id\": \"story-image-id\",\n              \"path\": \"https://uploads.postiz.com/story.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"story\"\n      }\n    }\n  ]\n}\n```\n\n### Collaborative Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Amazing collab with @partner! 🤝\",\n          \"image\": [\n            {\n              \"id\": \"collab-image-id\",\n              \"path\": \"https://uploads.postiz.com/collab.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"collaborators\": [\n          { \"label\": \"partner_username\" }\n        ]\n      }\n    }\n  ]\n}\n```\n\n### Carousel Post\n\nCreate a carousel by adding multiple images:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Swipe to see all the photos! 📸\",\n          \"image\": [\n            { \"id\": \"img1\", \"path\": \"https://uploads.postiz.com/1.jpg\" },\n            { \"id\": \"img2\", \"path\": \"https://uploads.postiz.com/2.jpg\" },\n            { \"id\": \"img3\", \"path\": \"https://uploads.postiz.com/3.jpg\" }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\"\n      }\n    }\n  ]\n}\n```\n"
   },
   {
+    "slug": "instagram-standalone",
+    "type": "instagram-standalone",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram-standalone.md",
+    "fetchedAt": "2026-05-02T00:31:48.129Z",
+    "defaultSettings": {
+      "__type": "instagram-standalone",
+      "post_type": "post",
+      "is_trial_reel": false,
+      "collaborators": []
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Standalone Settings\n\n> API settings for posting to standalone Instagram accounts\n\nInstagram Standalone posts use the same settings schema as Facebook\nBusiness-linked Instagram. The only difference is the `__type` value -\neverything else (post type, trial reels, collaborators, image arrays) is\nidentical.\n\n## Settings Schema\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram-standalone\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": []\n  }\n}\n```\n\nFor the full field reference (including `post_type` values, trial reel\noptions, and collaborator format), see the\n[Instagram settings page](/public-api/providers/instagram).\n\n## Fields\n\n| Field                 | Type      | Required | Description                                                                                     |\n| --------------------- | --------- | -------- | ----------------------------------------------------------------------------------------------- |\n| `__type`              | `string`  | Yes      | Must be `instagram-standalone`                                                                  |\n| `post_type`           | `string`  | Yes      | Type of Instagram post (see [Instagram reference](/public-api/providers/instagram#post_type))   |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel                                                                 |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels                                                             |\n| `collaborators`       | `array`   | No       | Tagged collaborators (see [Instagram reference](/public-api/providers/instagram#collaborators)) |\n\n***\n\n## Complete Example\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-standalone-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"New product launch! Check it out.\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram-standalone\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\nFor Story, Reel, and collaborator examples, see the\n[Instagram complete examples](/public-api/providers/instagram#complete-example) -\nswap `__type: \"instagram\"` for `__type: \"instagram-standalone\"`.\n"
+  },
+  {
     "slug": "kick",
     "type": "kick",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/kick.md",
-    "fetchedAt": "2026-04-30T01:37:43.851Z",
+    "fetchedAt": "2026-05-02T00:31:48.329Z",
     "defaultSettings": {
       "__type": "kick"
     },
@@ -145,7 +168,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "lemmy",
     "type": "lemmy",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/lemmy.md",
-    "fetchedAt": "2026-04-30T01:37:44.061Z",
+    "fetchedAt": "2026-05-02T00:31:48.538Z",
     "defaultSettings": {
       "__type": "lemmy",
       "subreddit": [
@@ -165,7 +188,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "linkedin",
     "type": "linkedin",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin.md",
-    "fetchedAt": "2026-04-30T01:37:44.299Z",
+    "fetchedAt": "2026-05-02T00:31:48.730Z",
     "defaultSettings": {
       "__type": "linkedin",
       "post_as_images_carousel": false
@@ -173,10 +196,21 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# LinkedIn Settings\n\n> API settings for posting to LinkedIn\n\n## Settings Schema\n\nWhen creating a post for LinkedIn (profile or page), use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"linkedin\",\n    \"post_as_images_carousel\": false\n  }\n}\n```\n\n<Note>\n  Use `__type: \"linkedin\"` for personal profiles and `__type: \"linkedin-page\"` for company pages. Both use the same settings schema.\n</Note>\n\n## Fields\n\n| Field                     | Type      | Required | Description                           |\n| ------------------------- | --------- | -------- | ------------------------------------- |\n| `__type`                  | `string`  | Yes      | `linkedin` or `linkedin-page`         |\n| `post_as_images_carousel` | `boolean` | No       | Display multiple images as a carousel |\n| `carousel_name`           | `string`  | No       | Name for the carousel document        |\n\n### `post_as_images_carousel`\n\nWhen set to `true` and you have multiple images, they will be displayed as a swipeable carousel instead of a collage.\n\n| Value   | Description                           |\n| ------- | ------------------------------------- |\n| `true`  | Images displayed as carousel          |\n| `false` | Images displayed as collage (default) |\n\n### `carousel_name`\n\nOptional name for the carousel document. Only used when `post_as_images_carousel` is `true`.\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-linkedin-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Excited to share our latest update! 🎉\\n\\n#innovation #tech\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"linkedin\"\n      }\n    }\n  ]\n}\n```\n\n### Carousel Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-linkedin-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Check out our product showcase! Swipe through to see all features →\",\n          \"image\": [\n            {\n              \"id\": \"image-1-id\",\n              \"path\": \"https://uploads.postiz.com/image1.png\"\n            },\n            {\n              \"id\": \"image-2-id\",\n              \"path\": \"https://uploads.postiz.com/image2.png\"\n            },\n            {\n              \"id\": \"image-3-id\",\n              \"path\": \"https://uploads.postiz.com/image3.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"linkedin\",\n        \"post_as_images_carousel\": true,\n        \"carousel_name\": \"Product Showcase\"\n      }\n    }\n  ]\n}\n```\n\n### Company Page Post\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-linkedin-page-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"We're hiring! Join our team and help us build the future.\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"linkedin-page\",\n        \"post_as_images_carousel\": false\n      }\n    }\n  ]\n}\n```\n"
   },
   {
+    "slug": "linkedin-page",
+    "type": "linkedin-page",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin-page.md",
+    "fetchedAt": "2026-05-02T00:31:48.955Z",
+    "defaultSettings": {
+      "__type": "linkedin-page",
+      "post_as_images_carousel": false
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# LinkedIn Page Settings\n\n> API settings for posting to LinkedIn company pages\n\nLinkedIn Page posts use the same settings schema as personal LinkedIn\nprofiles. The only difference is the `__type` value - everything else\n(carousel options, image arrays, content) is identical.\n\n## Settings Schema\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"linkedin-page\",\n    \"post_as_images_carousel\": false\n  }\n}\n```\n\nFor the full field reference (including `post_as_images_carousel` and\n`carousel_name`), see the [LinkedIn settings page](/public-api/providers/linkedin).\n\n## Fields\n\n| Field                     | Type      | Required | Description                                                                         |\n| ------------------------- | --------- | -------- | ----------------------------------------------------------------------------------- |\n| `__type`                  | `string`  | Yes      | Must be `linkedin-page`                                                             |\n| `post_as_images_carousel` | `boolean` | No       | Display multiple images as a carousel                                               |\n| `carousel_name`           | `string`  | No       | Name for the carousel document. Only used when `post_as_images_carousel` is `true`. |\n\n***\n\n## Complete Example\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-linkedin-page-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"We're hiring! Join our team and help us build the future.\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"linkedin-page\",\n        \"post_as_images_carousel\": false\n      }\n    }\n  ]\n}\n```\n\nFor a carousel example, see the\n[LinkedIn carousel example](/public-api/providers/linkedin#carousel-post) -\nswap `__type: \"linkedin\"` for `__type: \"linkedin-page\"`.\n"
+  },
+  {
     "slug": "listmonk",
     "type": "listmonk",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/listmonk.md",
-    "fetchedAt": "2026-04-30T01:37:45.082Z",
+    "fetchedAt": "2026-05-02T00:31:49.146Z",
     "defaultSettings": {
       "__type": "listmonk",
       "subject": "Newsletter Subject Line",
@@ -187,10 +221,20 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Listmonk Settings\n\n> Provider settings for Listmonk newsletter campaigns\n\n## Overview\n\nListmonk is a self-hosted newsletter and mailing list manager. When creating campaigns, you need to specify the subject, preview text, list, and optionally a template.\n\n## Settings Schema\n\n```json theme={null}\n{\n  \"__type\": \"listmonk\",\n  \"subject\": \"Newsletter Subject Line\",\n  \"preview\": \"Preview text shown in email clients\",\n  \"list\": \"list-id\",\n  \"template\": \"template-id\"\n}\n```\n\n## Properties\n\n| Property   | Type   | Required | Description                     |\n| ---------- | ------ | -------- | ------------------------------- |\n| `__type`   | string | ✅        | Must be `\"listmonk\"`            |\n| `subject`  | string | ✅        | Email subject line (min 1 char) |\n| `preview`  | string | ✅        | Preview text for email clients  |\n| `list`     | string | ✅        | List ID to send to              |\n| `template` | string | ❌        | Template ID to use              |\n\n## Example\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-listmonk-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"<h1>Weekly Newsletter</h1>\\n<p>Here's what happened this week...</p>\\n\\n<h2>Top Stories</h2>\\n<ul>\\n<li>Story 1</li>\\n<li>Story 2</li>\\n</ul>\\n\\n<p>Thanks for reading!</p>\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"listmonk\",\n        \"subject\": \"🚀 Weekly Update - December 2024\",\n        \"preview\": \"Check out what's new this week!\",\n        \"list\": \"1\",\n        \"template\": \"2\"\n      }\n    }\n  ]\n}\n```\n\n## Notes\n\n* Get the list and template IDs from your Listmonk admin dashboard\n* Content should be HTML formatted\n* The `preview` text appears in email clients before opening the email\n* If no template is specified, the default template will be used\n"
   },
   {
+    "slug": "mastodon",
+    "type": "mastodon",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/mastodon.md",
+    "fetchedAt": "2026-05-02T00:31:49.326Z",
+    "defaultSettings": {
+      "__type": "mastodon"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Mastodon Settings\n\n> API settings for posting to Mastodon\n\n## Settings Schema\n\nWhen creating a post for Mastodon, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"mastodon\"\n  }\n}\n```\n\n<Note>\n  Mastodon has no provider-specific settings beyond `__type`. Post content,\n  images, and the schedule are configured at the post level - see the\n  [Create Post](/public-api/posts/create) reference. The instance the post\n  publishes to is determined by the connected integration, not the settings\n  block.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description        |\n| -------- | -------- | -------- | ------------------ |\n| `__type` | `string` | Yes      | Must be `mastodon` |\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-mastodon-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API! 🐘\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"mastodon\"\n      }\n    }\n  ]\n}\n```\n\n### Thread Post\n\nCreate a thread by adding multiple items to the `value` array. Each entry\nbecomes a reply chained to the previous toot:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-mastodon-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"1/ Starting a thread on Mastodon from the API\",\n          \"image\": []\n        },\n        {\n          \"content\": \"2/ Each value entry becomes a reply in the thread\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"mastodon\"\n      }\n    }\n  ]\n}\n```\n\n### Post with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-mastodon-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing a launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"mastodon\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
     "slug": "medium",
     "type": "medium",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/medium.md",
-    "fetchedAt": "2026-04-30T01:37:45.525Z",
+    "fetchedAt": "2026-05-02T00:31:49.508Z",
     "defaultSettings": {
       "__type": "medium",
       "title": "Article Title",
@@ -210,7 +254,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "moltbook",
     "type": "moltbook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/moltbook.md",
-    "fetchedAt": "2026-04-30T01:37:45.795Z",
+    "fetchedAt": "2026-05-02T00:31:49.686Z",
     "defaultSettings": {
       "__type": "moltbook",
       "submolt": "submolt-id"
@@ -218,10 +262,20 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Moltbook Settings\n\n> API settings for posting to Moltbook\n\n## Settings Schema\n\nWhen creating a post for Moltbook, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"moltbook\",\n    \"submolt\": \"submolt-id\"\n  }\n}\n```\n\n## Fields\n\n| Field     | Type     | Required | Description                       |\n| --------- | -------- | -------- | --------------------------------- |\n| `__type`  | `string` | Yes      | Must be `moltbook`                |\n| `submolt` | `string` | Yes      | Submolt (community) ID to post in |\n\n***\n\n## Complete Example\n\n### Post to a Submolt\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-moltbook-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello Moltbook!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"moltbook\",\n        \"submolt\": \"submolt-id\"\n      }\n    }\n  ]\n}\n```\n"
   },
   {
+    "slug": "nostr",
+    "type": "nostr",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/nostr.md",
+    "fetchedAt": "2026-05-02T00:31:49.863Z",
+    "defaultSettings": {
+      "__type": "nostr"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Nostr Settings\n\n> API settings for posting to Nostr\n\n## Settings Schema\n\nWhen creating a post for Nostr, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"nostr\"\n  }\n}\n```\n\n<Note>\n  Nostr has no provider-specific settings beyond `__type`. The relays that the\n  note publishes to are determined by the connected integration, not the\n  settings block. Post content, images, and the schedule are configured at\n  the post level - see the [Create Post](/public-api/posts/create) reference.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description     |\n| -------- | -------- | -------- | --------------- |\n| `__type` | `string` | Yes      | Must be `nostr` |\n\n***\n\n## Complete Example\n\n### Text Note\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-nostr-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"nostr\"\n      }\n    }\n  ]\n}\n```\n\n### Note with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-nostr-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing today's launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"nostr\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
     "slug": "pinterest",
     "type": "pinterest",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/pinterest.md",
-    "fetchedAt": "2026-04-30T01:37:46.444Z",
+    "fetchedAt": "2026-05-02T00:31:50.032Z",
     "defaultSettings": {
       "__type": "pinterest",
       "board": "board-id",
@@ -235,7 +289,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "reddit",
     "type": "reddit",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/reddit.md",
-    "fetchedAt": "2026-04-30T01:37:46.600Z",
+    "fetchedAt": "2026-05-02T00:31:50.248Z",
     "defaultSettings": {
       "__type": "reddit",
       "subreddit": [
@@ -257,7 +311,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "skool",
     "type": "skool",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/skool.md",
-    "fetchedAt": "2026-04-30T01:37:46.895Z",
+    "fetchedAt": "2026-05-02T00:31:50.425Z",
     "defaultSettings": {
       "__type": "skool",
       "group": "group-id",
@@ -270,7 +324,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "slack",
     "type": "slack",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/slack.md",
-    "fetchedAt": "2026-04-30T01:37:47.080Z",
+    "fetchedAt": "2026-05-02T00:31:50.656Z",
     "defaultSettings": {
       "__type": "slack",
       "channel": "channel-id"
@@ -278,10 +332,30 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Slack Settings\n\n> API settings for posting to Slack\n\n## Settings Schema\n\nWhen posting a message to Slack, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"slack\",\n    \"channel\": \"channel-id\"\n  }\n}\n```\n\n## Fields\n\n| Field     | Type     | Required | Description      |\n| --------- | -------- | -------- | ---------------- |\n| `__type`  | `string` | Yes      | Must be `slack`  |\n| `channel` | `string` | Yes      | Slack channel ID |\n\n### `channel`\n\nThe Slack channel ID where the message will be posted. This is required.\n\n<Note>\n  **How to get a Slack channel ID:**\n\n  1. Right-click on the channel name in Slack\n  2. Click \"View channel details\"\n  3. Scroll to the bottom - the Channel ID is displayed there\n  4. Or, the channel ID is in the URL when viewing a channel: `https://app.slack.com/client/WORKSPACE/CHANNEL_ID`\n</Note>\n\n***\n\n## Complete Example\n\n### Simple Message\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-slack-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"🎉 *New Release v2.0*\\n\\nWe're excited to announce our latest update!\\n\\n• New dashboard design\\n• Improved performance\\n• Bug fixes\\n\\nCheck it out: https://example.com/release\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"slack\",\n        \"channel\": \"C0123456789\"\n      }\n    }\n  ]\n}\n```\n\n### Message with Image\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-slack-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"📊 *Weekly Metrics Report*\\n\\nHere's our performance this week:\",\n          \"image\": [\n            {\n              \"id\": \"metrics-image-id\",\n              \"path\": \"https://uploads.postiz.com/metrics.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"slack\",\n        \"channel\": \"C0123456789\"\n      }\n    }\n  ]\n}\n```\n\n### Team Announcement\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-slack-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \":mega: *Team Update*\\n\\n> Reminder: All-hands meeting tomorrow at 2 PM\\n\\n*Agenda:*\\n1. Q4 Review\\n2. 2025 Planning\\n3. Open Q&A\\n\\nSee you there! :wave:\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"slack\",\n        \"channel\": \"C9876543210\"\n      }\n    }\n  ]\n}\n```\n\n<Info>\n  Slack supports its own formatting syntax:\n\n  * `*bold*` for **bold**\n  * `_italic_` for *italic*\n  * `~strikethrough~` for ~~strikethrough~~\n  * `:emoji_name:` for emojis\n  * `> quote` for quotes\n  * `` `code` `` for inline code\n</Info>\n"
   },
   {
+    "slug": "telegram",
+    "type": "telegram",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/telegram.md",
+    "fetchedAt": "2026-05-02T00:31:50.876Z",
+    "defaultSettings": {
+      "__type": "telegram"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Telegram Settings\n\n> API settings for posting to Telegram\n\n## Settings Schema\n\nWhen creating a post for Telegram, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"telegram\"\n  }\n}\n```\n\n<Note>\n  Telegram has no provider-specific settings beyond `__type`. The destination\n  chat or channel is determined by the connected integration, not the\n  settings block. Post content, images, and the schedule are configured at\n  the post level - see the [Create Post](/public-api/posts/create) reference.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description        |\n| -------- | -------- | -------- | ------------------ |\n| `__type` | `string` | Yes      | Must be `telegram` |\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-telegram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"telegram\"\n      }\n    }\n  ]\n}\n```\n\n### Post with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-telegram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing today's launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"telegram\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
+    "slug": "threads",
+    "type": "threads",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/threads.md",
+    "fetchedAt": "2026-05-02T00:31:51.065Z",
+    "defaultSettings": {
+      "__type": "threads"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Threads Settings\n\n> API settings for posting to Threads\n\n## Settings Schema\n\nWhen creating a post for Threads, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"threads\"\n  }\n}\n```\n\n<Note>\n  Threads has no provider-specific settings beyond `__type`. Post content,\n  images, and the schedule are configured at the post level - see the\n  [Create Post](/public-api/posts/create) reference.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description       |\n| -------- | -------- | -------- | ----------------- |\n| `__type` | `string` | Yes      | Must be `threads` |\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-threads-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"threads\"\n      }\n    }\n  ]\n}\n```\n\n### Thread Post\n\nCreate a thread by adding multiple items to the `value` array. Each entry\nbecomes a reply chained to the previous post:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-threads-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"1/ Starting a thread on Threads from the API\",\n          \"image\": []\n        },\n        {\n          \"content\": \"2/ Each value entry becomes a reply\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"threads\"\n      }\n    }\n  ]\n}\n```\n\n### Post with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-threads-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing today's launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"threads\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
     "slug": "tiktok",
     "type": "tiktok",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/tiktok.md",
-    "fetchedAt": "2026-04-30T01:37:47.300Z",
+    "fetchedAt": "2026-05-02T00:31:51.285Z",
     "defaultSettings": {
       "__type": "tiktok",
       "title": "",
@@ -301,7 +375,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "twitch",
     "type": "twitch",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/twitch.md",
-    "fetchedAt": "2026-04-30T01:37:48.140Z",
+    "fetchedAt": "2026-05-02T00:31:51.556Z",
     "defaultSettings": {
       "__type": "twitch",
       "messageType": "message",
@@ -310,10 +384,20 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Twitch Settings\n\n> API settings for posting to Twitch chat\n\n## Settings Schema\n\nWhen creating a post for Twitch, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"twitch\",\n    \"messageType\": \"message\",\n    \"announcementColor\": \"primary\"\n  }\n}\n```\n\n## Fields\n\n| Field               | Type     | Required | Description                     |\n| ------------------- | -------- | -------- | ------------------------------- |\n| `__type`            | `string` | Yes      | Must be `twitch`                |\n| `messageType`       | `string` | No       | Type of message to send         |\n| `announcementColor` | `string` | No       | Color for announcement messages |\n\n### `messageType`\n\nThe type of message to send in Twitch chat.\n\n| Value          | Description                                |\n| -------------- | ------------------------------------------ |\n| `message`      | Regular chat message (default)             |\n| `announcement` | Announcement message (highlighted in chat) |\n\n### `announcementColor`\n\nThe color of the announcement banner. Only applies when `messageType` is `announcement`.\n\n| Value     | Description          |\n| --------- | -------------------- |\n| `primary` | Default purple color |\n| `blue`    | Blue announcement    |\n| `green`   | Green announcement   |\n| `orange`  | Orange announcement  |\n| `purple`  | Purple announcement  |\n\n***\n\n## Complete Example\n\n### Regular Chat Message\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-twitch-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Going live in 5 minutes! Today's stream: Ranked grind to Diamond 🎮\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"twitch\",\n        \"messageType\": \"message\"\n      }\n    }\n  ]\n}\n```\n\n### Announcement\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-twitch-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"🎉 HUGE NEWS! We just hit 10,000 followers! Thank you all so much for the support! Special stream tomorrow to celebrate!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"twitch\",\n        \"messageType\": \"announcement\",\n        \"announcementColor\": \"purple\"\n      }\n    }\n  ]\n}\n```\n\n### Green Announcement\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-twitch-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"✅ Giveaway winner announced! Congratulations to the lucky viewer! Check your DMs for prize details.\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"twitch\",\n        \"messageType\": \"announcement\",\n        \"announcementColor\": \"green\"\n      }\n    }\n  ]\n}\n```\n\n<Info>\n  * Regular messages appear as standard chat messages from your bot/account.\n  * Announcements are highlighted with a colored banner and are more visible to viewers.\n  * The `announcementColor` field is ignored when `messageType` is `message`.\n</Info>\n"
   },
   {
+    "slug": "vk",
+    "type": "vk",
+    "sourceUrl": "https://docs.postiz.com/public-api/providers/vk.md",
+    "fetchedAt": "2026-05-02T00:31:51.733Z",
+    "defaultSettings": {
+      "__type": "vk"
+    },
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# VK Settings\n\n> API settings for posting to VK (VKontakte)\n\n## Settings Schema\n\nWhen creating a post for VK, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"vk\"\n  }\n}\n```\n\n<Note>\n  VK has no provider-specific settings beyond `__type`. The wall or community\n  the post publishes to is determined by the connected integration, not the\n  settings block. Post content, images, and the schedule are configured at\n  the post level - see the [Create Post](/public-api/posts/create) reference.\n</Note>\n\n## Fields\n\n| Field    | Type     | Required | Description  |\n| -------- | -------- | -------- | ------------ |\n| `__type` | `string` | Yes      | Must be `vk` |\n\n***\n\n## Complete Example\n\n### Text Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-vk-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Hello from the Postiz API!\",\n          \"image\": []\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"vk\"\n      }\n    }\n  ]\n}\n```\n\n### Post with Image\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-vk-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Sharing today's launch screenshot\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"vk\"\n      }\n    }\n  ]\n}\n```\n"
+  },
+  {
     "slug": "warpcast",
     "type": "warpcast",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/warpcast.md",
-    "fetchedAt": "2026-04-30T01:37:48.306Z",
+    "fetchedAt": "2026-05-02T00:31:51.919Z",
     "defaultSettings": {
       "__type": "warpcast",
       "subreddit": [
@@ -330,7 +414,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "whop",
     "type": "whop",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/whop.md",
-    "fetchedAt": "2026-04-30T01:37:48.487Z",
+    "fetchedAt": "2026-05-02T00:31:52.115Z",
     "defaultSettings": {
       "__type": "whop",
       "company": "company-id",
@@ -343,7 +427,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "wordpress",
     "type": "wordpress",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/wordpress.md",
-    "fetchedAt": "2026-04-30T01:37:48.761Z",
+    "fetchedAt": "2026-05-02T00:31:52.332Z",
     "defaultSettings": {
       "__type": "wordpress",
       "title": "Post Title",
@@ -359,7 +443,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "x",
     "type": "x",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/x.md",
-    "fetchedAt": "2026-04-30T01:37:48.838Z",
+    "fetchedAt": "2026-05-02T00:31:52.527Z",
     "defaultSettings": {
       "__type": "x",
       "who_can_reply_post": "everyone",
@@ -373,7 +457,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "youtube",
     "type": "youtube",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/youtube.md",
-    "fetchedAt": "2026-04-30T01:37:49.007Z",
+    "fetchedAt": "2026-05-02T00:31:52.752Z",
     "defaultSettings": {
       "__type": "youtube",
       "title": "My Video Title",

@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
  *  successfully or the bundle refresh fails. Drift here means docs.postiz.com
  *  changed something we depend on. */
 const DOCUMENTED_PROVIDERS: string[] = [
+  "bluesky",
   "devto",
   "discord",
   "dribbble",
@@ -24,18 +25,25 @@ const DOCUMENTED_PROVIDERS: string[] = [
   "gmb",
   "hashnode",
   "instagram",
+  "instagram-standalone",
   "kick",
   "lemmy",
   "linkedin",
+  "linkedin-page",
   "listmonk",
+  "mastodon",
   "medium",
   "moltbook",
+  "nostr",
   "pinterest",
   "reddit",
   "skool",
   "slack",
+  "telegram",
+  "threads",
   "tiktok",
   "twitch",
+  "vk",
   "warpcast",
   "whop",
   "wordpress",
@@ -48,16 +56,8 @@ const DOCUMENTED_PROVIDERS: string[] = [
  *  ignored, but a 200 means upstream just published the doc - log loudly so
  *  the next cron PR moves the slug into DOCUMENTED_PROVIDERS. */
 const UNDOCUMENTED_PROVIDERS: string[] = [
-  "bluesky",
-  "instagram-standalone",
-  "linkedin-page",
-  "mastodon",
   "mastodon-custom",
   "mewe",
-  "nostr",
-  "telegram",
-  "threads",
-  "vk",
 ];
 
 const ALL_PROVIDERS = new Set([...DOCUMENTED_PROVIDERS, ...UNDOCUMENTED_PROVIDERS]);
