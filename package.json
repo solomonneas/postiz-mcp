@@ -64,11 +64,11 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^25.6.2",
     "openclaw": "^2026.4.22",
     "tsup": "^8.4.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.5.0",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.5"
   },
   "scripts": {
