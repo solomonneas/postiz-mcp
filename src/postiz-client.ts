@@ -684,9 +684,10 @@ function isSafeProviderSlug(slug: string): boolean {
   return /^[a-z0-9-]+$/.test(slug) && slug.length > 0 && slug.length < 64;
 }
 
-function toUint8Array(buf: Uint8Array | Buffer): Uint8Array {
-  if (buf instanceof Uint8Array) return buf;
-  return new Uint8Array(buf);
+function toUint8Array(buf: Uint8Array | Buffer): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(buf.byteLength);
+  bytes.set(buf);
+  return bytes;
 }
 
 function isAbortError(err: unknown): boolean {
