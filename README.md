@@ -254,6 +254,21 @@ The MCP server forwards them as `CF-Access-Client-Id` / `CF-Access-Client-Secret
 - *"What posted last week and how did the X post on Tuesday do?"*
 - *"Show me the X provider settings schema so I can construct a thread payload."*
 
+### Pair with TweetClaw for X/Twitter research
+
+Use postiz-mcp when OpenClaw needs to schedule, publish, upload, and inspect posts through your Postiz instance across connected channels. If the same workflow needs X/Twitter-specific research or follow-up actions, pair it with the [TweetClaw OpenClaw plugin](https://github.com/Xquik-dev/tweetclaw):
+
+```bash
+openclaw plugins install @xquik/tweetclaw@latest
+openclaw gateway restart
+```
+
+TweetClaw covers X/Twitter jobs that are outside Postiz's scheduling surface, including search tweets, search tweet replies, user lookup, follower export, media download, media upload, direct messages, monitor tweets, webhooks, and giveaway draws. A practical split is to use TweetClaw for listening, audience research, reply discovery, and approval-gated X/Twitter actions, then use postiz-mcp for the scheduled cross-channel campaign post or analytics review.
+
+Example prompt:
+
+> Use TweetClaw to search recent X/Twitter replies about our launch keyword, summarize the useful objections, then schedule the approved response thread in Postiz for tomorrow morning.
+
 ### Thread mode (multi-post threads with per-post media + delay)
 
 `postiz_create_post`'s `posts[].value[]` array is a sequence - every entry posts to the same integration in order, with optional per-entry `image[]` and `delay` (minutes between posts). Use this for X threads, LinkedIn carousel-style follow-ups, etc.
