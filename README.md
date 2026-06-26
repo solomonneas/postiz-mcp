@@ -5,7 +5,7 @@
 <h1 align="center">postiz-mcp</h1>
 
 <p align="center">
-  <strong>Canonical Postiz client for any MCP-compatible client.</strong>
+  <strong>Canonical Postiz client for any MCP-compatible client: 22 typed tools, writes off by default.</strong>
 </p>
 
 <p align="center">
@@ -19,6 +19,12 @@
 Canonical [Postiz](https://github.com/gitroomhq/postiz-app) client for any MCP-compatible client. Full coverage of the Postiz public API (integrations, posts, uploads, analytics, video) with env-gated writes, confirm-required deletes, and a built-in rate-limit guard.
 
 Ships as a stdio MCP server **and** a first-class OpenClaw native plugin from the same package.
+
+<p align="center">
+  <img src="docs/assets/postiz-tools.svg" alt="Recording: install postiz-mcp, watch it refuse to start without config, then list the 22 typed tools it exposes" width="780">
+</p>
+
+Point it at your Postiz and your agent gets 22 typed, schema-validated tools. Reads are always on; writes stay off until you set `POSTIZ_ENABLE_WRITE=true`. The `fatal` line above is the server refusing to start without config, not a crash.
 
 ## Why
 
