@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Postiz itself (the app / public API)
+    url: https://github.com/gitroomhq/postiz-app/issues
+    about: This repo is a client. Issues with Postiz, its API, or a social platform belong upstream.
+  - name: Security vulnerability
+    url: https://github.com/solomonneas/postiz-mcp/security/policy
+    about: Please report security issues privately, not as a public issue.

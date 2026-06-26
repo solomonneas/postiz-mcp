@@ -1,0 +1,49 @@
+name: Bug report
+description: Something in postiz-mcp behaves incorrectly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Do not paste your `POSTIZ_API_KEY`, a real `POSTIZ_URL`, or any token** - redact them first.
+  - type: input
+    id: version
+    attributes:
+      label: postiz-mcp version
+      placeholder: "0.2.0 (npm ls -g postiz-mcp)"
+    validations:
+      required: true
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options: [Claude Desktop, Claude Code, OpenClaw, Hermes, Codex CLI, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: gating
+    attributes:
+      label: Gating state
+      description: Which gates were enabled?
+      options: ["reads only (default)", "writes enabled", "writes + deletes enabled"]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected vs. what occurred. Include the tool name (e.g. postiz_create_post).
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / errors
+      description: Paste any error output (e.g. PostizCfAccessChallengeError). Redact secrets.
+      render: shell
