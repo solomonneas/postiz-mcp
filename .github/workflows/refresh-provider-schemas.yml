@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: Install
@@ -34,6 +34,8 @@ jobs:
           npm run build
 
       - name: Open PR if schemas changed
+        id: create-pr
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v6
         with:
           branch: chore/refresh-provider-schemas
@@ -45,3 +47,9 @@ jobs:
             If providers were added/removed, update `scripts/fetch-provider-schemas.ts` `PROVIDERS` accordingly.
           add-paths: |
             src/providers/schemas.ts
+
+      - name: Report PR creation warning
+        if: steps.create-pr.outcome == 'failure'
+        run: |
+          echo "::warning::Schema refresh passed and the update branch was pushed, but GitHub repo policy blocked automatic PR creation."
+          echo "::warning::Open the PR manually from branch chore/refresh-provider-schemas."

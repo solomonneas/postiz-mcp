@@ -2,7 +2,7 @@
 // Run `npm run refresh-schemas` to update.
 //
 // Source: https://docs.postiz.com/public-api/providers/{slug}.md
-// Generated: 2026-05-02T00:31:53.394Z
+// Generated: 2026-06-27T19:13:26.101Z
 
 export interface ProviderSchema {
   /** URL slug used by docs.postiz.com (e.g. "x", "gmb"). */
@@ -28,7 +28,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "bluesky",
     "type": "bluesky",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/bluesky.md",
-    "fetchedAt": "2026-05-02T00:31:46.634Z",
+    "fetchedAt": "2026-06-27T19:13:20.653Z",
     "defaultSettings": {
       "__type": "bluesky"
     },
@@ -38,7 +38,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "devto",
     "type": "devto",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/devto.md",
-    "fetchedAt": "2026-05-02T00:31:46.832Z",
+    "fetchedAt": "2026-06-27T19:13:20.770Z",
     "defaultSettings": {
       "__type": "devto",
       "title": "Article Title",
@@ -61,7 +61,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "discord",
     "type": "discord",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/discord.md",
-    "fetchedAt": "2026-05-02T00:31:47.041Z",
+    "fetchedAt": "2026-06-27T19:13:20.910Z",
     "defaultSettings": {
       "__type": "discord",
       "channel": "channel-id"
@@ -72,7 +72,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "dribbble",
     "type": "dribbble",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/dribbble.md",
-    "fetchedAt": "2026-05-02T00:31:47.223Z",
+    "fetchedAt": "2026-06-27T19:13:21.052Z",
     "defaultSettings": {
       "__type": "dribbble",
       "title": "My Shot Title",
@@ -84,7 +84,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "facebook",
     "type": "facebook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/facebook.md",
-    "fetchedAt": "2026-05-02T00:31:47.393Z",
+    "fetchedAt": "2026-06-27T19:13:21.217Z",
     "defaultSettings": {
       "__type": "facebook",
       "url": "https://example.com/my-article"
@@ -95,7 +95,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "gmb",
     "type": "gmb",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/gmb.md",
-    "fetchedAt": "2026-05-02T00:31:47.635Z",
+    "fetchedAt": "2026-06-27T19:13:21.354Z",
     "defaultSettings": {
       "__type": "gmb",
       "topicType": "STANDARD",
@@ -108,7 +108,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "hashnode",
     "type": "hashnode",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/hashnode.md",
-    "fetchedAt": "2026-05-02T00:31:47.877Z",
+    "fetchedAt": "2026-06-27T19:13:21.463Z",
     "defaultSettings": {
       "__type": "hashnode",
       "title": "Article Title",
@@ -132,33 +132,38 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "instagram",
     "type": "instagram",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram.md",
-    "fetchedAt": "2026-05-02T00:31:48.053Z",
+    "fetchedAt": "2026-06-27T19:13:21.595Z",
     "defaultSettings": {
       "__type": "instagram",
       "post_type": "post",
       "is_trial_reel": false,
-      "collaborators": []
+      "collaborators": [],
+      "audio": {
+        "id": "587784541076604",
+        "audio_volume": 100,
+        "video_volume": 100
+      }
     },
-    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Settings\n\n> API settings for posting to Instagram\n\n## Settings Schema\n\nWhen creating a post for Instagram, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": []\n  }\n}\n```\n\n<Note>\n  Use `__type: \"instagram\"` for Facebook Business-linked accounts and `__type: \"instagram-standalone\"` for standalone Instagram accounts. Both use the same settings schema.\n</Note>\n\n## Fields\n\n| Field                 | Type      | Required | Description                           |\n| --------------------- | --------- | -------- | ------------------------------------- |\n| `__type`              | `string`  | Yes      | `instagram` or `instagram-standalone` |\n| `post_type`           | `string`  | Yes      | Type of Instagram post                |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel       |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels   |\n| `collaborators`       | `array`   | No       | List of collaborator usernames        |\n\n### `post_type`\n\n| Value   | Description                          |\n| ------- | ------------------------------------ |\n| `post`  | Regular feed post                    |\n| `story` | Instagram Story (24-hour visibility) |\n\n### `is_trial_reel`\n\nWhen set to `true`, the post will be published as a trial reel with limited initial visibility.\n\n### `graduation_strategy`\n\nControls how trial reels graduate to full visibility. Only applicable when `is_trial_reel` is `true`.\n\n| Value            | Description                                 |\n| ---------------- | ------------------------------------------- |\n| `MANUAL`         | Manually graduate the reel                  |\n| `SS_PERFORMANCE` | Automatically graduate based on performance |\n\n### `collaborators`\n\nArray of collaborator objects. Each collaborator will receive an invite to be added as a collaborator on the post.\n\n```json theme={null}\n{\n  \"collaborators\": [\n    { \"label\": \"username1\" },\n    { \"label\": \"username2\" }\n  ]\n}\n```\n\n***\n\n## Complete Example\n\n### Feed Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Beautiful sunset today! 🌅\\n\\n#sunset #photography #nature\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/sunset.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\n### Story Post\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"\",\n          \"image\": [\n            {\n              \"id\": \"story-image-id\",\n              \"path\": \"https://uploads.postiz.com/story.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"story\"\n      }\n    }\n  ]\n}\n```\n\n### Collaborative Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Amazing collab with @partner! 🤝\",\n          \"image\": [\n            {\n              \"id\": \"collab-image-id\",\n              \"path\": \"https://uploads.postiz.com/collab.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"collaborators\": [\n          { \"label\": \"partner_username\" }\n        ]\n      }\n    }\n  ]\n}\n```\n\n### Carousel Post\n\nCreate a carousel by adding multiple images:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Swipe to see all the photos! 📸\",\n          \"image\": [\n            { \"id\": \"img1\", \"path\": \"https://uploads.postiz.com/1.jpg\" },\n            { \"id\": \"img2\", \"path\": \"https://uploads.postiz.com/2.jpg\" },\n            { \"id\": \"img3\", \"path\": \"https://uploads.postiz.com/3.jpg\" }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\"\n      }\n    }\n  ]\n}\n```\n"
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Settings\n\n> API settings for posting to Instagram\n\n## Settings Schema\n\nWhen creating a post for Instagram, use the following settings schema:\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": [],\n    \"audio\": {\n      \"id\": \"587784541076604\",\n      \"audio_volume\": 100,\n      \"video_volume\": 100\n    }\n  }\n}\n```\n\n<Note>\n  Use `__type: \"instagram\"` for Facebook Business-linked accounts and `__type: \"instagram-standalone\"` for standalone Instagram accounts. Both use the same settings schema, except `audio`, which is only available for Facebook Business-linked accounts.\n</Note>\n\n## Fields\n\n| Field                 | Type      | Required | Description                                   |\n| --------------------- | --------- | -------- | --------------------------------------------- |\n| `__type`              | `string`  | Yes      | `instagram` or `instagram-standalone`         |\n| `post_type`           | `string`  | Yes      | Type of Instagram post                        |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel               |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels           |\n| `collaborators`       | `array`   | No       | List of collaborator usernames                |\n| `audio`               | `object`  | No       | Audio to attach to a Reel (single video only) |\n\n### `post_type`\n\n| Value   | Description                          |\n| ------- | ------------------------------------ |\n| `post`  | Regular feed post                    |\n| `story` | Instagram Story (24-hour visibility) |\n\n### `is_trial_reel`\n\nWhen set to `true`, the post will be published as a trial reel with limited initial visibility.\n\n### `graduation_strategy`\n\nControls how trial reels graduate to full visibility. Only applicable when `is_trial_reel` is `true`.\n\n| Value            | Description                                 |\n| ---------------- | ------------------------------------------- |\n| `MANUAL`         | Manually graduate the reel                  |\n| `SS_PERFORMANCE` | Automatically graduate based on performance |\n\n### `collaborators`\n\nArray of collaborator objects. Each collaborator will receive an invite to be added as a collaborator on the post.\n\n```json theme={null}\n{\n  \"collaborators\": [\n    { \"label\": \"username1\" },\n    { \"label\": \"username2\" }\n  ]\n}\n```\n\n### `audio`\n\nAttach music or an original sound to a Reel, based on the\n[Instagram Audio API](https://developers.facebook.com/docs/instagram-platform/content-publishing/audio-api/).\n\n<Warning>\n  Audio can only be attached to a Reel - a single video with `post_type: \"post\"`.\n  It is not supported on Stories, carousels, image posts, or on\n  `instagram-standalone` channels (the Audio API requires Facebook Login).\n</Warning>\n\n| Field          | Type     | Required | Description                                                   |\n| -------------- | -------- | -------- | ------------------------------------------------------------- |\n| `id`           | `string` | Yes      | The audio asset ID                                            |\n| `title`        | `string` | No       | Audio title (display only)                                    |\n| `artist`       | `string` | No       | Artist or creator name (display only)                         |\n| `image`        | `string` | No       | Cover artwork URL (display only)                              |\n| `audio_volume` | `number` | No       | Volume of the attached audio, `0`-`100` (default `100`)       |\n| `video_volume` | `number` | No       | Volume of the original video audio, `0`-`100` (default `100`) |\n\nTo find audio IDs, use the [trigger endpoint](/public-api/integrations/trigger)\nwith the `audioSearch` tool:\n\n```bash theme={null}\ncurl -X POST https://api.postiz.com/public/v1/integration-trigger/{integrationId} \\\n  -H \"Authorization: your-api-key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"methodName\": \"audioSearch\", \"data\": {\"q\": \"summer vibes\", \"type\": \"music\"}}'\n```\n\n| Parameter | Description                                                                              |\n| --------- | ---------------------------------------------------------------------------------------- |\n| `q`       | Search query - leave empty to get trending audio                                         |\n| `type`    | `music` (royalty-free catalog) or `original_sound` (user-generated), defaults to `music` |\n\nThe response contains `{ output: [{ id, title, artist, image, duration, previewUrl }] }` -\npass the chosen `id` into `settings.audio.id`.\n\n<Note>\n  Only audio authorized for third-party use is returned, so the catalog can be\n  smaller than what you see in the Instagram app.\n</Note>\n\n***\n\n## Complete Example\n\n### Feed Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Beautiful sunset today! 🌅\\n\\n#sunset #photography #nature\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/sunset.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\n### Story Post\n\n```json theme={null}\n{\n  \"type\": \"now\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"\",\n          \"image\": [\n            {\n              \"id\": \"story-image-id\",\n              \"path\": \"https://uploads.postiz.com/story.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"story\"\n      }\n    }\n  ]\n}\n```\n\n### Collaborative Post\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Amazing collab with @partner! 🤝\",\n          \"image\": [\n            {\n              \"id\": \"collab-image-id\",\n              \"path\": \"https://uploads.postiz.com/collab.jpg\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"collaborators\": [\n          { \"label\": \"partner_username\" }\n        ]\n      }\n    }\n  ]\n}\n```\n\n### Reel with Audio\n\nAttach audio found with `audioSearch` to a single-video Reel:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"New reel with trending audio! 🎵\",\n          \"image\": [\n            {\n              \"id\": \"video-id\",\n              \"path\": \"https://uploads.postiz.com/reel.mp4\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\",\n        \"audio\": {\n          \"id\": \"587784541076604\",\n          \"audio_volume\": 80,\n          \"video_volume\": 20\n        }\n      }\n    }\n  ]\n}\n```\n\n### Carousel Post\n\nCreate a carousel by adding multiple images:\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"Swipe to see all the photos! 📸\",\n          \"image\": [\n            { \"id\": \"img1\", \"path\": \"https://uploads.postiz.com/1.jpg\" },\n            { \"id\": \"img2\", \"path\": \"https://uploads.postiz.com/2.jpg\" },\n            { \"id\": \"img3\", \"path\": \"https://uploads.postiz.com/3.jpg\" }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram\",\n        \"post_type\": \"post\"\n      }\n    }\n  ]\n}\n```\n"
   },
   {
     "slug": "instagram-standalone",
     "type": "instagram-standalone",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram-standalone.md",
-    "fetchedAt": "2026-05-02T00:31:48.129Z",
+    "fetchedAt": "2026-06-27T19:13:21.741Z",
     "defaultSettings": {
       "__type": "instagram-standalone",
       "post_type": "post",
       "is_trial_reel": false,
       "collaborators": []
     },
-    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Standalone Settings\n\n> API settings for posting to standalone Instagram accounts\n\nInstagram Standalone posts use the same settings schema as Facebook\nBusiness-linked Instagram. The only difference is the `__type` value -\neverything else (post type, trial reels, collaborators, image arrays) is\nidentical.\n\n## Settings Schema\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram-standalone\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": []\n  }\n}\n```\n\nFor the full field reference (including `post_type` values, trial reel\noptions, and collaborator format), see the\n[Instagram settings page](/public-api/providers/instagram).\n\n## Fields\n\n| Field                 | Type      | Required | Description                                                                                     |\n| --------------------- | --------- | -------- | ----------------------------------------------------------------------------------------------- |\n| `__type`              | `string`  | Yes      | Must be `instagram-standalone`                                                                  |\n| `post_type`           | `string`  | Yes      | Type of Instagram post (see [Instagram reference](/public-api/providers/instagram#post_type))   |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel                                                                 |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels                                                             |\n| `collaborators`       | `array`   | No       | Tagged collaborators (see [Instagram reference](/public-api/providers/instagram#collaborators)) |\n\n***\n\n## Complete Example\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-standalone-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"New product launch! Check it out.\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram-standalone\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\nFor Story, Reel, and collaborator examples, see the\n[Instagram complete examples](/public-api/providers/instagram#complete-example) -\nswap `__type: \"instagram\"` for `__type: \"instagram-standalone\"`.\n"
+    "markdown": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.postiz.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Instagram Standalone Settings\n\n> API settings for posting to standalone Instagram accounts\n\nInstagram Standalone posts use the same settings schema as Facebook\nBusiness-linked Instagram. The only difference is the `__type` value -\neverything else (post type, trial reels, collaborators, image arrays) is\nidentical.\n\n<Warning>\n  The [`audio` setting](/public-api/providers/instagram#audio) (attaching music\n  or original sounds to Reels) is **not** available on standalone channels - the\n  Instagram Audio API only works with Facebook Login. The `audio` setting is\n  ignored when posting, and the `audioSearch` tool is not exposed for\n  `instagram-standalone` integrations.\n</Warning>\n\n## Settings Schema\n\n```json theme={null}\n{\n  \"settings\": {\n    \"__type\": \"instagram-standalone\",\n    \"post_type\": \"post\",\n    \"is_trial_reel\": false,\n    \"collaborators\": []\n  }\n}\n```\n\nFor the full field reference (including `post_type` values, trial reel\noptions, and collaborator format), see the\n[Instagram settings page](/public-api/providers/instagram).\n\n## Fields\n\n| Field                 | Type      | Required | Description                                                                                     |\n| --------------------- | --------- | -------- | ----------------------------------------------------------------------------------------------- |\n| `__type`              | `string`  | Yes      | Must be `instagram-standalone`                                                                  |\n| `post_type`           | `string`  | Yes      | Type of Instagram post (see [Instagram reference](/public-api/providers/instagram#post_type))   |\n| `is_trial_reel`       | `boolean` | No       | Whether to post as a trial reel                                                                 |\n| `graduation_strategy` | `string`  | No       | Graduation strategy for trial reels                                                             |\n| `collaborators`       | `array`   | No       | Tagged collaborators (see [Instagram reference](/public-api/providers/instagram#collaborators)) |\n\n***\n\n## Complete Example\n\n```json theme={null}\n{\n  \"type\": \"schedule\",\n  \"date\": \"2024-12-14T10:00:00.000Z\",\n  \"shortLink\": false,\n  \"tags\": [],\n  \"posts\": [\n    {\n      \"integration\": {\n        \"id\": \"your-instagram-standalone-integration-id\"\n      },\n      \"value\": [\n        {\n          \"content\": \"New product launch! Check it out.\",\n          \"image\": [\n            {\n              \"id\": \"image-id\",\n              \"path\": \"https://uploads.postiz.com/launch.png\"\n            }\n          ]\n        }\n      ],\n      \"settings\": {\n        \"__type\": \"instagram-standalone\",\n        \"post_type\": \"post\",\n        \"is_trial_reel\": false,\n        \"collaborators\": []\n      }\n    }\n  ]\n}\n```\n\nFor Story, Reel, and collaborator examples, see the\n[Instagram complete examples](/public-api/providers/instagram#complete-example) -\nswap `__type: \"instagram\"` for `__type: \"instagram-standalone\"`.\n"
   },
   {
     "slug": "kick",
     "type": "kick",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/kick.md",
-    "fetchedAt": "2026-05-02T00:31:48.329Z",
+    "fetchedAt": "2026-06-27T19:13:21.897Z",
     "defaultSettings": {
       "__type": "kick"
     },
@@ -168,7 +173,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "lemmy",
     "type": "lemmy",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/lemmy.md",
-    "fetchedAt": "2026-05-02T00:31:48.538Z",
+    "fetchedAt": "2026-06-27T19:13:22.054Z",
     "defaultSettings": {
       "__type": "lemmy",
       "subreddit": [
@@ -188,7 +193,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "linkedin",
     "type": "linkedin",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin.md",
-    "fetchedAt": "2026-05-02T00:31:48.730Z",
+    "fetchedAt": "2026-06-27T19:13:22.260Z",
     "defaultSettings": {
       "__type": "linkedin",
       "post_as_images_carousel": false
@@ -199,7 +204,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "linkedin-page",
     "type": "linkedin-page",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin-page.md",
-    "fetchedAt": "2026-05-02T00:31:48.955Z",
+    "fetchedAt": "2026-06-27T19:13:22.471Z",
     "defaultSettings": {
       "__type": "linkedin-page",
       "post_as_images_carousel": false
@@ -210,7 +215,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "listmonk",
     "type": "listmonk",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/listmonk.md",
-    "fetchedAt": "2026-05-02T00:31:49.146Z",
+    "fetchedAt": "2026-06-27T19:13:22.643Z",
     "defaultSettings": {
       "__type": "listmonk",
       "subject": "Newsletter Subject Line",
@@ -224,7 +229,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "mastodon",
     "type": "mastodon",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/mastodon.md",
-    "fetchedAt": "2026-05-02T00:31:49.326Z",
+    "fetchedAt": "2026-06-27T19:13:22.892Z",
     "defaultSettings": {
       "__type": "mastodon"
     },
@@ -234,7 +239,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "medium",
     "type": "medium",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/medium.md",
-    "fetchedAt": "2026-05-02T00:31:49.508Z",
+    "fetchedAt": "2026-06-27T19:13:23.016Z",
     "defaultSettings": {
       "__type": "medium",
       "title": "Article Title",
@@ -254,7 +259,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "moltbook",
     "type": "moltbook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/moltbook.md",
-    "fetchedAt": "2026-05-02T00:31:49.686Z",
+    "fetchedAt": "2026-06-27T19:13:23.144Z",
     "defaultSettings": {
       "__type": "moltbook",
       "submolt": "submolt-id"
@@ -265,7 +270,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "nostr",
     "type": "nostr",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/nostr.md",
-    "fetchedAt": "2026-05-02T00:31:49.863Z",
+    "fetchedAt": "2026-06-27T19:13:23.294Z",
     "defaultSettings": {
       "__type": "nostr"
     },
@@ -275,7 +280,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "pinterest",
     "type": "pinterest",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/pinterest.md",
-    "fetchedAt": "2026-05-02T00:31:50.032Z",
+    "fetchedAt": "2026-06-27T19:13:23.457Z",
     "defaultSettings": {
       "__type": "pinterest",
       "board": "board-id",
@@ -289,7 +294,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "reddit",
     "type": "reddit",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/reddit.md",
-    "fetchedAt": "2026-05-02T00:31:50.248Z",
+    "fetchedAt": "2026-06-27T19:13:23.657Z",
     "defaultSettings": {
       "__type": "reddit",
       "subreddit": [
@@ -311,7 +316,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "skool",
     "type": "skool",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/skool.md",
-    "fetchedAt": "2026-05-02T00:31:50.425Z",
+    "fetchedAt": "2026-06-27T19:13:23.789Z",
     "defaultSettings": {
       "__type": "skool",
       "group": "group-id",
@@ -324,7 +329,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "slack",
     "type": "slack",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/slack.md",
-    "fetchedAt": "2026-05-02T00:31:50.656Z",
+    "fetchedAt": "2026-06-27T19:13:23.903Z",
     "defaultSettings": {
       "__type": "slack",
       "channel": "channel-id"
@@ -335,7 +340,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "telegram",
     "type": "telegram",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/telegram.md",
-    "fetchedAt": "2026-05-02T00:31:50.876Z",
+    "fetchedAt": "2026-06-27T19:13:24.021Z",
     "defaultSettings": {
       "__type": "telegram"
     },
@@ -345,7 +350,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "threads",
     "type": "threads",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/threads.md",
-    "fetchedAt": "2026-05-02T00:31:51.065Z",
+    "fetchedAt": "2026-06-27T19:13:24.183Z",
     "defaultSettings": {
       "__type": "threads"
     },
@@ -355,7 +360,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "tiktok",
     "type": "tiktok",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/tiktok.md",
-    "fetchedAt": "2026-05-02T00:31:51.285Z",
+    "fetchedAt": "2026-06-27T19:13:24.362Z",
     "defaultSettings": {
       "__type": "tiktok",
       "title": "",
@@ -375,7 +380,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "twitch",
     "type": "twitch",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/twitch.md",
-    "fetchedAt": "2026-05-02T00:31:51.556Z",
+    "fetchedAt": "2026-06-27T19:13:24.510Z",
     "defaultSettings": {
       "__type": "twitch",
       "messageType": "message",
@@ -387,7 +392,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "vk",
     "type": "vk",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/vk.md",
-    "fetchedAt": "2026-05-02T00:31:51.733Z",
+    "fetchedAt": "2026-06-27T19:13:24.685Z",
     "defaultSettings": {
       "__type": "vk"
     },
@@ -397,7 +402,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "warpcast",
     "type": "warpcast",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/warpcast.md",
-    "fetchedAt": "2026-05-02T00:31:51.919Z",
+    "fetchedAt": "2026-06-27T19:13:24.802Z",
     "defaultSettings": {
       "__type": "warpcast",
       "subreddit": [
@@ -414,7 +419,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "whop",
     "type": "whop",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/whop.md",
-    "fetchedAt": "2026-05-02T00:31:52.115Z",
+    "fetchedAt": "2026-06-27T19:13:24.895Z",
     "defaultSettings": {
       "__type": "whop",
       "company": "company-id",
@@ -427,7 +432,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "wordpress",
     "type": "wordpress",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/wordpress.md",
-    "fetchedAt": "2026-05-02T00:31:52.332Z",
+    "fetchedAt": "2026-06-27T19:13:25.015Z",
     "defaultSettings": {
       "__type": "wordpress",
       "title": "Post Title",
@@ -443,7 +448,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "x",
     "type": "x",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/x.md",
-    "fetchedAt": "2026-05-02T00:31:52.527Z",
+    "fetchedAt": "2026-06-27T19:13:25.514Z",
     "defaultSettings": {
       "__type": "x",
       "who_can_reply_post": "everyone",
@@ -457,7 +462,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "youtube",
     "type": "youtube",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/youtube.md",
-    "fetchedAt": "2026-05-02T00:31:52.752Z",
+    "fetchedAt": "2026-06-27T19:13:25.654Z",
     "defaultSettings": {
       "__type": "youtube",
       "title": "My Video Title",
