@@ -2,7 +2,7 @@
 // Run `npm run refresh-schemas` to update.
 //
 // Source: https://docs.postiz.com/public-api/providers/{slug}.md
-// Generated: 2026-06-27T19:13:26.101Z
+// Generated: 2026-06-27T19:15:15.730Z
 
 export interface ProviderSchema {
   /** URL slug used by docs.postiz.com (e.g. "x", "gmb"). */
@@ -28,7 +28,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "bluesky",
     "type": "bluesky",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/bluesky.md",
-    "fetchedAt": "2026-06-27T19:13:20.653Z",
+    "fetchedAt": "2026-06-27T19:15:14.267Z",
     "defaultSettings": {
       "__type": "bluesky"
     },
@@ -38,7 +38,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "devto",
     "type": "devto",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/devto.md",
-    "fetchedAt": "2026-06-27T19:13:20.770Z",
+    "fetchedAt": "2026-06-27T19:15:14.300Z",
     "defaultSettings": {
       "__type": "devto",
       "title": "Article Title",
@@ -61,7 +61,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "discord",
     "type": "discord",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/discord.md",
-    "fetchedAt": "2026-06-27T19:13:20.910Z",
+    "fetchedAt": "2026-06-27T19:15:14.345Z",
     "defaultSettings": {
       "__type": "discord",
       "channel": "channel-id"
@@ -72,7 +72,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "dribbble",
     "type": "dribbble",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/dribbble.md",
-    "fetchedAt": "2026-06-27T19:13:21.052Z",
+    "fetchedAt": "2026-06-27T19:15:14.378Z",
     "defaultSettings": {
       "__type": "dribbble",
       "title": "My Shot Title",
@@ -84,7 +84,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "facebook",
     "type": "facebook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/facebook.md",
-    "fetchedAt": "2026-06-27T19:13:21.217Z",
+    "fetchedAt": "2026-06-27T19:15:14.414Z",
     "defaultSettings": {
       "__type": "facebook",
       "url": "https://example.com/my-article"
@@ -95,7 +95,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "gmb",
     "type": "gmb",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/gmb.md",
-    "fetchedAt": "2026-06-27T19:13:21.354Z",
+    "fetchedAt": "2026-06-27T19:15:14.474Z",
     "defaultSettings": {
       "__type": "gmb",
       "topicType": "STANDARD",
@@ -108,7 +108,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "hashnode",
     "type": "hashnode",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/hashnode.md",
-    "fetchedAt": "2026-06-27T19:13:21.463Z",
+    "fetchedAt": "2026-06-27T19:15:14.507Z",
     "defaultSettings": {
       "__type": "hashnode",
       "title": "Article Title",
@@ -132,7 +132,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "instagram",
     "type": "instagram",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram.md",
-    "fetchedAt": "2026-06-27T19:13:21.595Z",
+    "fetchedAt": "2026-06-27T19:15:14.540Z",
     "defaultSettings": {
       "__type": "instagram",
       "post_type": "post",
@@ -150,7 +150,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "instagram-standalone",
     "type": "instagram-standalone",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/instagram-standalone.md",
-    "fetchedAt": "2026-06-27T19:13:21.741Z",
+    "fetchedAt": "2026-06-27T19:15:14.574Z",
     "defaultSettings": {
       "__type": "instagram-standalone",
       "post_type": "post",
@@ -163,7 +163,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "kick",
     "type": "kick",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/kick.md",
-    "fetchedAt": "2026-06-27T19:13:21.897Z",
+    "fetchedAt": "2026-06-27T19:15:14.613Z",
     "defaultSettings": {
       "__type": "kick"
     },
@@ -173,7 +173,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "lemmy",
     "type": "lemmy",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/lemmy.md",
-    "fetchedAt": "2026-06-27T19:13:22.054Z",
+    "fetchedAt": "2026-06-27T19:15:14.643Z",
     "defaultSettings": {
       "__type": "lemmy",
       "subreddit": [
@@ -193,7 +193,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "linkedin",
     "type": "linkedin",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin.md",
-    "fetchedAt": "2026-06-27T19:13:22.260Z",
+    "fetchedAt": "2026-06-27T19:15:14.693Z",
     "defaultSettings": {
       "__type": "linkedin",
       "post_as_images_carousel": false
@@ -204,7 +204,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "linkedin-page",
     "type": "linkedin-page",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/linkedin-page.md",
-    "fetchedAt": "2026-06-27T19:13:22.471Z",
+    "fetchedAt": "2026-06-27T19:15:14.732Z",
     "defaultSettings": {
       "__type": "linkedin-page",
       "post_as_images_carousel": false
@@ -215,7 +215,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "listmonk",
     "type": "listmonk",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/listmonk.md",
-    "fetchedAt": "2026-06-27T19:13:22.643Z",
+    "fetchedAt": "2026-06-27T19:15:14.768Z",
     "defaultSettings": {
       "__type": "listmonk",
       "subject": "Newsletter Subject Line",
@@ -229,7 +229,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "mastodon",
     "type": "mastodon",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/mastodon.md",
-    "fetchedAt": "2026-06-27T19:13:22.892Z",
+    "fetchedAt": "2026-06-27T19:15:14.806Z",
     "defaultSettings": {
       "__type": "mastodon"
     },
@@ -239,7 +239,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "medium",
     "type": "medium",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/medium.md",
-    "fetchedAt": "2026-06-27T19:13:23.016Z",
+    "fetchedAt": "2026-06-27T19:15:14.839Z",
     "defaultSettings": {
       "__type": "medium",
       "title": "Article Title",
@@ -259,7 +259,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "moltbook",
     "type": "moltbook",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/moltbook.md",
-    "fetchedAt": "2026-06-27T19:13:23.144Z",
+    "fetchedAt": "2026-06-27T19:15:14.875Z",
     "defaultSettings": {
       "__type": "moltbook",
       "submolt": "submolt-id"
@@ -270,7 +270,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "nostr",
     "type": "nostr",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/nostr.md",
-    "fetchedAt": "2026-06-27T19:13:23.294Z",
+    "fetchedAt": "2026-06-27T19:15:14.918Z",
     "defaultSettings": {
       "__type": "nostr"
     },
@@ -280,7 +280,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "pinterest",
     "type": "pinterest",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/pinterest.md",
-    "fetchedAt": "2026-06-27T19:13:23.457Z",
+    "fetchedAt": "2026-06-27T19:15:14.964Z",
     "defaultSettings": {
       "__type": "pinterest",
       "board": "board-id",
@@ -294,7 +294,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "reddit",
     "type": "reddit",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/reddit.md",
-    "fetchedAt": "2026-06-27T19:13:23.657Z",
+    "fetchedAt": "2026-06-27T19:15:15.005Z",
     "defaultSettings": {
       "__type": "reddit",
       "subreddit": [
@@ -316,7 +316,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "skool",
     "type": "skool",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/skool.md",
-    "fetchedAt": "2026-06-27T19:13:23.789Z",
+    "fetchedAt": "2026-06-27T19:15:15.041Z",
     "defaultSettings": {
       "__type": "skool",
       "group": "group-id",
@@ -329,7 +329,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "slack",
     "type": "slack",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/slack.md",
-    "fetchedAt": "2026-06-27T19:13:23.903Z",
+    "fetchedAt": "2026-06-27T19:15:15.078Z",
     "defaultSettings": {
       "__type": "slack",
       "channel": "channel-id"
@@ -340,7 +340,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "telegram",
     "type": "telegram",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/telegram.md",
-    "fetchedAt": "2026-06-27T19:13:24.021Z",
+    "fetchedAt": "2026-06-27T19:15:15.112Z",
     "defaultSettings": {
       "__type": "telegram"
     },
@@ -350,7 +350,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "threads",
     "type": "threads",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/threads.md",
-    "fetchedAt": "2026-06-27T19:13:24.183Z",
+    "fetchedAt": "2026-06-27T19:15:15.150Z",
     "defaultSettings": {
       "__type": "threads"
     },
@@ -360,7 +360,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "tiktok",
     "type": "tiktok",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/tiktok.md",
-    "fetchedAt": "2026-06-27T19:13:24.362Z",
+    "fetchedAt": "2026-06-27T19:15:15.187Z",
     "defaultSettings": {
       "__type": "tiktok",
       "title": "",
@@ -380,7 +380,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "twitch",
     "type": "twitch",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/twitch.md",
-    "fetchedAt": "2026-06-27T19:13:24.510Z",
+    "fetchedAt": "2026-06-27T19:15:15.251Z",
     "defaultSettings": {
       "__type": "twitch",
       "messageType": "message",
@@ -392,7 +392,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "vk",
     "type": "vk",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/vk.md",
-    "fetchedAt": "2026-06-27T19:13:24.685Z",
+    "fetchedAt": "2026-06-27T19:15:15.284Z",
     "defaultSettings": {
       "__type": "vk"
     },
@@ -402,7 +402,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "warpcast",
     "type": "warpcast",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/warpcast.md",
-    "fetchedAt": "2026-06-27T19:13:24.802Z",
+    "fetchedAt": "2026-06-27T19:15:15.315Z",
     "defaultSettings": {
       "__type": "warpcast",
       "subreddit": [
@@ -419,7 +419,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "whop",
     "type": "whop",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/whop.md",
-    "fetchedAt": "2026-06-27T19:13:24.895Z",
+    "fetchedAt": "2026-06-27T19:15:15.346Z",
     "defaultSettings": {
       "__type": "whop",
       "company": "company-id",
@@ -432,7 +432,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "wordpress",
     "type": "wordpress",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/wordpress.md",
-    "fetchedAt": "2026-06-27T19:13:25.015Z",
+    "fetchedAt": "2026-06-27T19:15:15.388Z",
     "defaultSettings": {
       "__type": "wordpress",
       "title": "Post Title",
@@ -448,7 +448,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "x",
     "type": "x",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/x.md",
-    "fetchedAt": "2026-06-27T19:13:25.514Z",
+    "fetchedAt": "2026-06-27T19:15:15.428Z",
     "defaultSettings": {
       "__type": "x",
       "who_can_reply_post": "everyone",
@@ -462,7 +462,7 @@ export const PROVIDER_SCHEMAS: ProviderSchema[] = [
     "slug": "youtube",
     "type": "youtube",
     "sourceUrl": "https://docs.postiz.com/public-api/providers/youtube.md",
-    "fetchedAt": "2026-06-27T19:13:25.654Z",
+    "fetchedAt": "2026-06-27T19:15:15.511Z",
     "defaultSettings": {
       "__type": "youtube",
       "title": "My Video Title",
