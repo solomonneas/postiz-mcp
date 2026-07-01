@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js 20+">
-  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5">
-  <img src="https://img.shields.io/badge/MCP-server-7A3EFF?style=for-the-badge" alt="MCP server">
-  <img src="https://img.shields.io/badge/OpenClaw-native_plugin-6C3BFF?style=for-the-badge" alt="OpenClaw native plugin">
-  <img src="https://img.shields.io/badge/license-MIT-2EA043?style=for-the-badge" alt="MIT license">
+  <img src="https://shieldcn.dev/badge/Node.js-20%2B-339933.svg?logo=node.js&logoColor=white" alt="Node.js 20+">
+  <img src="https://shieldcn.dev/badge/TypeScript-5-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript 5">
+  <img src="https://shieldcn.dev/badge/MCP-server-7A3EFF.svg" alt="MCP server">
+  <img src="https://shieldcn.dev/badge/OpenClaw-native_plugin-6C3BFF.svg" alt="OpenClaw native plugin">
+  <img src="https://shieldcn.dev/badge/license-MIT-2EA043.svg" alt="MIT license">
 </p>
 
 Canonical [Postiz](https://github.com/gitroomhq/postiz-app) client for any MCP-compatible client. Full coverage of the Postiz public API (integrations, posts, uploads, analytics, video) with env-gated writes, confirm-required deletes, and a built-in rate-limit guard.
