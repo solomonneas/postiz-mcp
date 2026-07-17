@@ -11,8 +11,13 @@ Releases before this changelog was started are on [npm](https://www.npmjs.com/pa
 ### Added
 - Project governance: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue
   and pull-request templates.
+- Pull-request and `main` branch verification on Node.js 20 and 22.
 
 ### Changed
 - README now leads with a recorded terminal demo (`docs/assets/postiz-tools.svg`,
   reproducible from `docs/assets/postiz-tools.cast`): install, the safe-by-default
   config gate, and the 22 typed tools listed via the MCP inspector.
+- Refreshed dependencies within their declared version ranges. The production
+  dependency audit now reports no known vulnerabilities.
+- Updated workflow actions and replaced contributor instructions that referenced
+  a missing verification script with the commands the repository provides.

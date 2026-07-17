@@ -15,7 +15,7 @@ Closes #
 
 ## Checklist
 
-- [ ] `./scripts/verify` passes (typecheck + tests + build)
+- [ ] `npm run typecheck && npm test && npm run build` passes
 - [ ] Added or updated tests covering the change
 - [ ] Updated the `Unreleased` section of `CHANGELOG.md` for any user-visible effect
 - [ ] Writes/deletes stay gated off by default; no read-only change silently exposes a write
