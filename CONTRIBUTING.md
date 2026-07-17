@@ -7,10 +7,10 @@ public API, and the bar is "stays typed, stays tested, stays safe by default."
 
 ```bash
 npm install
-npm run typecheck && npm test && npm run build   # or: ./scripts/verify
+npm run typecheck && npm test && npm run build
 ```
 
-`./scripts/verify` is the definition of done: typecheck, tests, and build must all pass.
+Typecheck, tests, and build must all pass.
 
 ## What lands easily
 
@@ -34,5 +34,3 @@ Open an issue before a PR for:
   Use `http://localhost:5000` / `https://postiz.example.com` in examples.
 - **Keep writes gated.** A read-only change must not silently expose a write.
 - **Conventional commits**, no AI co-authorship trailers.
-
-Setting this up with an agent? See [AGENTS.md](AGENTS.md) for the full machine-readable guide.
