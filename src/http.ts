@@ -76,8 +76,10 @@ export interface HttpServerHandle {
 
 export async function createHttpServer(): Promise<HttpServerHandle> {
   const env = process.env;
-  const token = env.POSTIZ_MCP_HTTP_TOKEN;
-  if (!token?.trim()) throw new Error("POSTIZ_MCP_HTTP_TOKEN is required and must not be blank");
+  // Header values arrive trimmed, so compare against the trimmed secret.
+  const token = (env.POSTIZ_MCP_HTTP_TOKEN ?? "").trim();
+  if (!token) throw new Error("POSTIZ_MCP_HTTP_TOKEN is required and must not be blank");
+  if (token.length < 32) throw new Error("POSTIZ_MCP_HTTP_TOKEN must be at least 32 characters (e.g. openssl rand -hex 32)");
   const cfg = readConfigFromEnv();
   const url = new URL(cfg.baseUrl);
   const credentials = [cfg.apiKeyInline, cfg.cfAccessClientIdInline, cfg.cfAccessClientSecretInline,

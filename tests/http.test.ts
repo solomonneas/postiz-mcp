@@ -76,6 +76,15 @@ it.each([undefined, "", "  ", "test-upstream-key", "cf-secret", "cf-id", "url-pa
   configure({ POSTIZ_MCP_HTTP_TOKEN: token, POSTIZ_CF_ACCESS_CLIENT_SECRET: "cf-secret", POSTIZ_CF_ACCESS_CLIENT_ID: "cf-id", POSTIZ_URL: "https://user:url-password@postiz.example.com" });
   await expect(createHttpServer()).rejects.toThrow(/POSTIZ_MCP_HTTP_TOKEN/);
 });
+it("refuses a token shorter than 32 characters", async () => {
+  configure({ POSTIZ_MCP_HTTP_TOKEN: "a".repeat(31) });
+  await expect(createHttpServer()).rejects.toThrow(/at least 32 characters/);
+});
+it("accepts a token with surrounding whitespace from a secrets file", async () => {
+  const url = await start({ POSTIZ_MCP_HTTP_TOKEN: `  ${TOKEN}\n` });
+  const { client } = await connect(url);
+  expect((await client.listTools()).tools.length).toBeGreaterThan(0);
+});
 it("rejects a token matching an indirect API credential", async () => {
   configure({ POSTIZ_API_KEY_ENV: "TEST_POSTIZ_KEY", TEST_POSTIZ_KEY: TOKEN });
   await expect(createHttpServer()).rejects.toThrow(/POSTIZ_MCP_HTTP_TOKEN/);
