@@ -9,11 +9,18 @@ Releases before this changelog was started are on [npm](https://www.npmjs.com/pa
 ## [Unreleased]
 
 ### Added
+- Authenticated Streamable HTTP transport via `--http`, with per-session MCP
+  servers, a shared account rate budget, and an example systemd user service.
 - Project governance: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue
   and pull-request templates.
 - Pull-request and `main` branch verification on Node.js 20 and 22.
 
 ### Changed
+- HTTP local-path uploads require `POSTIZ_MCP_HTTP_LOCAL_FILES=true`. Upload
+  roots now enforce realpath containment and reads use one file handle.
+- URL upload filtering now checks bracketed IPv6, mapped private IPv4, and the
+  full IPv6 link-local range. DNS and redirect checks still require upstream
+  network controls.
 - README now leads with a recorded terminal demo (`docs/assets/postiz-tools.svg`,
   reproducible from `docs/assets/postiz-tools.cast`): install, the safe-by-default
   config gate, and the 22 typed tools listed via the MCP inspector.

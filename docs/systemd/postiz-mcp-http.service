@@ -1,0 +1,21 @@
+[Unit]
+Description=Postiz MCP HTTP server
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/postiz-mcp
+ExecStart=/usr/bin/node /opt/postiz-mcp/dist/mcp-server.js --http
+# Create this file with mode 0600.
+EnvironmentFile=%h/.config/postiz-mcp/http.env
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

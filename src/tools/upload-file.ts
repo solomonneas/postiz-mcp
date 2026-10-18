@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { stat } from "node:fs/promises";
-import { open } from "node:fs/promises";
+import { realpath, open, stat } from "node:fs/promises";
 import { basename } from "node:path";
+import { constants } from "node:fs";
 import type { PostizClient } from "../postiz-client.ts";
 import type { PostizPluginConfig } from "../config.ts";
 import { requireWriteGate } from "../gates.ts";
@@ -70,21 +70,32 @@ export function createUploadFileTool(
       let bytes: Uint8Array;
       let resolvedName: string;
       if (filePath) {
+        if (config.httpLocalFiles === false) {
+          throw new Error("HTTP filePath uploads require POSTIZ_MCP_HTTP_LOCAL_FILES=true");
+        }
         const roots = resolveUploadRoots(config.uploadRoots);
-        const absolute = assertPathUnderRoots(filePath, roots);
-        const info = await stat(absolute);
-        if (!info.isFile()) {
-          throw new Error(
-            `postiz_upload_file: ${filePath} is not a regular file`,
-          );
-        }
-        if (info.size > maxBytes) {
-          throw new Error(
-            `postiz_upload_file: file size ${info.size} exceeds maxUploadBytes ${maxBytes}`,
-          );
-        }
-        const fh = await open(absolute, "r");
+        // Check lexically first for a useful disabled-roots error, then follow
+        // symlinks and enforce containment on the actual path before opening.
+        const candidate = assertPathUnderRoots(filePath, roots);
+        const resolvedRoots = await Promise.allSettled(roots.map(root => realpath(root)));
+        const realRoots = resolvedRoots.flatMap(result => result.status === "fulfilled" ? [result.value] : []);
+        const absolute = assertPathUnderRoots(await realpath(candidate), realRoots);
+        const fh = await open(absolute, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
         try {
+          // Validate the descriptor's target too, including a parent-directory
+          // swap between realpath and open. Reads and stat use this same handle.
+          const openedPath = await realpath(`/proc/self/fd/${fh.fd}`).catch(async () => {
+            const [opened, current] = await Promise.all([fh.stat(), realpath(absolute)]);
+            const info = await stat(current);
+            if (opened.dev !== info.dev || opened.ino !== info.ino) throw new Error("Upload path changed while opening");
+            return current;
+          });
+          assertPathUnderRoots(openedPath, realRoots);
+          const info = await fh.stat();
+          if (!info.isFile()) throw new Error("postiz_upload_file: not a regular file");
+          if (info.size > maxBytes) {
+            throw new Error(`postiz_upload_file: file size ${info.size} exceeds maxUploadBytes ${maxBytes}`);
+          }
           const buf = Buffer.allocUnsafe(info.size);
           let read = 0;
           while (read < info.size) {

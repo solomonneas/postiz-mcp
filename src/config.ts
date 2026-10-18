@@ -18,6 +18,8 @@ export interface PostizPluginConfig {
    *  uploads are disabled and the agent must use base64 input.
    *  POSTIZ_UPLOAD_ROOTS (comma- or colon-separated) overrides at runtime. */
   uploadRoots: string[];
+  /** HTTP transport policy. Undefined preserves stdio/plugin behavior. */
+  httpLocalFiles?: boolean;
   /** Hard cap on a single upload's byte size, defended at the tool layer to
    *  prevent OOMing the MCP host on a 4 GiB video path. */
   maxUploadBytes: number;

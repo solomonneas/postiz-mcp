@@ -282,33 +282,33 @@ describe("entry-point registration parity", () => {
     return new RegExp(`(?<![A-Za-z0-9_])${factory}\\s*\\(`).test(source);
   }
 
-  it("every read-tool factory imported in mcp-server.ts is also imported AND invoked in index.ts", async () => {
+  it("every read-tool factory imported in src/server.ts is also imported AND invoked in index.ts", async () => {
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
     const root = path.resolve(import.meta.dirname, "..");
 
-    const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
+    const mcp = await fs.readFile(path.join(root, "src/server.ts"), "utf8");
     const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
 
-    // Every `createXTool` import in mcp-server.ts that comes from src/tools/
+    // Every `createXTool` import in src/server.ts that comes from src/tools/
     // must also be imported AND invoked in index.ts. (We restrict to
     // src/tools/ to avoid false positives on shared helpers.)
     const importRe =
-      /import\s*\{\s*(create[A-Za-z]+Tool)\s*\}\s*from\s*"\.\/src\/tools\/[^"]+";?/g;
+      /import\s*\{\s*(create[A-Za-z]+Tool)\s*\}\s*from\s*"\.\/tools\/[^"]+";?/g;
     const mcpFactories = [...mcp.matchAll(importRe)].map((m) => m[1]);
     expect(mcpFactories.length).toBeGreaterThan(0); // sanity
 
     for (const factory of mcpFactories) {
-      // 1. Must be invoked in mcp-server.ts (not just imported there).
+      // 1. Must be invoked in src/server.ts (not just imported there).
       expect(
         isInvoked(mcp, factory),
-        `factory ${factory} is imported in mcp-server.ts but never invoked there`,
+        `factory ${factory} is imported in src/server.ts but never invoked there`,
       ).toBe(true);
 
       // 2. Must be imported as an identifier in index.ts.
       expect(
         containsIdentifier(idx, factory),
-        `factory ${factory} is imported in mcp-server.ts but missing from index.ts`,
+        `factory ${factory} is imported in src/server.ts but missing from index.ts`,
       ).toBe(true);
 
       // 3. Must be invoked in index.ts (catches dead imports / commented-out
@@ -320,12 +320,12 @@ describe("entry-point registration parity", () => {
     }
   });
 
-  it("postiz_get_integration_settings is registered in mcp-server.ts and index.ts", async () => {
+  it("postiz_get_integration_settings is registered in src/server.ts and index.ts", async () => {
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
     const root = path.resolve(import.meta.dirname, "..");
 
-    const mcp = await fs.readFile(path.join(root, "mcp-server.ts"), "utf8");
+    const mcp = await fs.readFile(path.join(root, "src/server.ts"), "utf8");
     const idx = await fs.readFile(path.join(root, "index.ts"), "utf8");
 
     // Both files must IMPORT and INVOKE the factory, not just mention it.
