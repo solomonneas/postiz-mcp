@@ -170,16 +170,23 @@ export class PostizClient {
     };
   }
 
+  private readonly extraSecrets = new Set<string>();
+
+  registerSecret(secret: string): void {
+    if (secret) this.extraSecrets.add(secret);
+  }
+
   redact(text: string): string {
     let out = text;
     for (const secret of [
+      ...this.extraSecrets,
       this.apiKey,
       this.cfAccessClientSecret,
       this.cfAccessClientId,
     ]) {
       if (!secret) continue;
       // Skip absurdly short values to avoid mangling unrelated text.
-      if (secret.length < 8) continue;
+      if (secret.length < 8 && !this.extraSecrets.has(secret)) continue;
       out = out.split(secret).join("***REDACTED***");
     }
     return out;

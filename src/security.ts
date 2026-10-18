@@ -31,7 +31,13 @@ function isPrivateIPv4(addr: string): boolean {
 function isPrivateIPv6(addr: string): boolean {
   const lower = addr.toLowerCase().replace(/^\[|\]$/g, "");
   if (lower === "::" || lower === "::1") return true;
-  if (lower.startsWith("fe80:") || lower.startsWith("fe80::")) return true;
+  if (/^fe[89ab][0-9a-f]:/.test(lower)) return true;
+  // URL canonicalization writes mapped IPv4 addresses as hexadecimal pairs.
+  const mapped = lower.match(/^::ffff:([a-f0-9]{1,4}):([a-f0-9]{1,4})$/);
+  if (mapped) {
+    const hi = parseInt(mapped[1], 16), lo = parseInt(mapped[2], 16);
+    return isPrivateIPv4(`${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`);
+  }
   if (lower.startsWith("fc") || lower.startsWith("fd")) return true;
   if (lower.startsWith("ff")) return true;
   return false;
@@ -54,7 +60,7 @@ export function assertSafeUrl(rawUrl: string): URL {
   if (!ALLOWED_URL_PROTOCOLS.has(parsed.protocol)) {
     throw new SsrfBlockedError(`scheme ${parsed.protocol} not allowed`, rawUrl);
   }
-  const host = parsed.hostname;
+  const host = parsed.hostname.replace(/^\[|\]$/g, "");
   if (!host) throw new SsrfBlockedError("missing host", rawUrl);
   if (isPrivateHostname(host)) {
     throw new SsrfBlockedError("private hostname", rawUrl);

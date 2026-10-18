@@ -311,6 +311,81 @@ npm test
 npm run build
 ```
 
+## HTTP mode
+
+Start the built entry point with `node dist/mcp-server.js --http`. Without
+`--http`, the existing stdio transport is used. Keep the existing upstream
+configuration (`POSTIZ_URL`, API key, optional Cloudflare Access credentials).
+HTTP mode also accepts:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `POSTIZ_MCP_HTTP_TOKEN` | required | Separate bearer secret of at least 32 characters, trimmed. Blank, short and upstream-credential values are rejected. |
+| `POSTIZ_MCP_HTTP_HOST` | loopback | Listening interface. |
+| `POSTIZ_MCP_HTTP_PORT` | `18815` | Listening port. |
+| `POSTIZ_MCP_HTTP_LOCAL_FILES` | `false` | Set exactly `true` to allow `filePath` uploads from the server's filesystem. |
+
+`/mcp` requires bearer authentication. `GET /healthz` returns only
+`{"status":"ok"}` without authentication. Host and Origin checks run before
+authentication. Requests are capped at 1 MiB, including base64 uploads. Sessions
+are capped at 128 and expire after 30 idle minutes. Request and header timeouts
+are 30 and 10 seconds. SIGTERM and SIGINT close sessions and the listener.
+
+Every connection gets its own MCP server. All connections use the same Postiz
+account and share its rate budget. Write and delete flags are operator settings,
+and `confirm: true` is required on each delete call. There is no stored pending
+confirmation, draft, or publish ticket. Postiz stores drafts and schedules.
+
+HTTP local file uploads require both the opt-in above and `POSTIZ_UPLOAD_ROOTS`
+(comma- or colon-separated directories). Real paths and the opened file are
+checked against those roots. Symlink escapes are rejected. File metadata and
+contents are read through one handle, with the existing upload-size cap. Use
+`POSTIZ_MCP_HTTP_LOCAL_FILES=true` and `POSTIZ_UPLOAD_ROOTS` for large media:
+base64 input must fit inside the 1 MiB request limit, including JSON overhead.
+Base64
+uploads do not need filesystem access. Stdio and plugin uploads keep their
+existing opt-in through upload roots.
+
+URL uploads are fetched by Postiz, rather than by this MCP process. Recognized literal
+loopback, private IPv4, and private IPv6 ranges are rejected. IPv4-compatible,
+NAT64, and 6to4 IPv6 forms are not fully classified. This check does
+not resolve DNS or inspect redirects: a hostname resolving to a private address
+or a public URL redirecting there can still reach the Postiz host's network.
+Restrict that host's outbound network access before enabling writes for clients
+you do not trust.
+
+Claude Code configuration:
+
+```json
+{
+  "mcpServers": {
+    "postiz": {
+      "type": "http",
+      "url": "http://localhost:18815/mcp",
+      "headersHelper": "/path/to/helper POSTIZ_MCP_HTTP_TOKEN"
+    }
+  }
+}
+```
+
+The helper reads the named environment variable and prints a JSON object such
+as `{"Authorization":"Bearer ..."}` to stdout. Keep the secret out of the
+configuration file.
+
+Codex streamable HTTP configuration:
+
+```toml
+[mcp_servers.postiz]
+url = "http://localhost:18815/mcp"
+bearer_token_env_var = "POSTIZ_MCP_HTTP_TOKEN"
+```
+
+An example user service is in
+[`docs/systemd/postiz-mcp-http.service`](docs/systemd/postiz-mcp-http.service).
+Set its working directory and executable paths for your installation. Create
+its `EnvironmentFile` with mode `0600`, containing upstream configuration and
+a separate HTTP token. The example is not installed or started automatically.
+
 ## License
 
 MIT
