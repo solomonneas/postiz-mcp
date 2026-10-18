@@ -320,7 +320,7 @@ HTTP mode also accepts:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `POSTIZ_MCP_HTTP_TOKEN` | required | Separate bearer secret. Blank values and upstream credentials are rejected. |
+| `POSTIZ_MCP_HTTP_TOKEN` | required | Separate bearer secret of at least 32 characters, trimmed. Blank, short and upstream-credential values are rejected. |
 | `POSTIZ_MCP_HTTP_HOST` | loopback | Listening interface. |
 | `POSTIZ_MCP_HTTP_PORT` | `18815` | Listening port. |
 | `POSTIZ_MCP_HTTP_LOCAL_FILES` | `false` | Set exactly `true` to allow `filePath` uploads from the server's filesystem. |
